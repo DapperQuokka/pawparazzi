@@ -18,7 +18,7 @@ import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 /**
  * Web tab bar — uses expo-router/ui's Tabs/TabList.
  * The (tabs) group uses parentheses which are invisible in URLs,
- * so hrefs remain "/", "/explore", "/profile", and "/auth".
+ * so hrefs remain "/", "/urgent", "/profile", and "/auth".
  */
 export default function AppTabs() {
   return (
@@ -29,8 +29,8 @@ export default function AppTabs() {
           <TabTrigger name="home" href="/" asChild>
             <TabButton>Adopt</TabButton>
           </TabTrigger>
-          <TabTrigger name="explore" href="/explore" asChild>
-            <TabButton>Explore</TabButton>
+          <TabTrigger name="urgent" href="/urgent" asChild>
+            <TabButton>Urgent</TabButton>
           </TabTrigger>
           <TabTrigger name="profile" href="/profile" asChild>
             <TabButton>Profile</TabButton>
@@ -71,16 +71,6 @@ export function CustomTabList(props: TabListProps) {
 
         {props.children}
 
-        <ExternalLink href="https://docs.expo.dev" asChild>
-          <Pressable style={styles.externalPressable}>
-            <ThemedText type="link">Docs</ThemedText>
-            <SymbolView
-              tintColor={colors.text}
-              name={{ ios: 'arrow.up.right.square', web: 'link' }}
-              size={12}
-            />
-          </Pressable>
-        </ExternalLink>
       </ThemedView>
     </View>
   );

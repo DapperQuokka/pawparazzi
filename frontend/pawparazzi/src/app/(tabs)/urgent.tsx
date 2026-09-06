@@ -15,9 +15,9 @@ const CATEGORIES = [
   { id: 'cat', label: 'Cats', emoji: '🐈' },
   { id: 'rabbit', label: 'Rabbits', emoji: '🐇' },
   { id: 'bird', label: 'Birds', emoji: '🐦' },
-] as const;
+] as const; 
 
-export default function ExploreScreen() {
+export default function UrgentScreen() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
@@ -48,9 +48,9 @@ export default function ExploreScreen() {
     <View style={[styles.root, { backgroundColor: theme.background }]}>
       {/* ── Header ── */}
       <View style={[styles.header, { paddingTop: paddingTop + Spacing.two }]}>
-        <Text style={[styles.title, { color: theme.text }]}>Explore Pets 🔍</Text>
+        <Text style={[styles.title, { color: theme.text }]}>Urgent Rescues</Text>
         <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
-          Discover your future furry or feathered best friend
+          These animals have limited time left in their shelter and need a home immediately. A foster or adopter could change everything.
         </Text>
 
         {/* Search */}
