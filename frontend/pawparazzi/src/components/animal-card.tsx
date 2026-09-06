@@ -1,18 +1,11 @@
 import { Image } from 'expo-image';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { getSpeciesEmoji } from '@/constants/species';
 import { BrandColors, Spacing } from '@/constants/theme';
 import type { Animal } from '@/data/animals';
 import { formatAge, formatDistance } from '@/data/animals';
 import { useTheme } from '@/hooks/use-theme';
-
-const SPECIES_EMOJI: Record<Animal['species'], string> = {
-  dog: '🐕',
-  cat: '🐈',
-  rabbit: '🐇',
-  bird: '🐦',
-  other: '🐾',
-};
 
 type AnimalCardProps = {
   animal: Animal;
@@ -50,7 +43,7 @@ export function AnimalCard({ animal, onPress }: AnimalCardProps) {
         </View>
         {/* Species emoji badge — top left */}
         <View style={[styles.speciesBadge, { backgroundColor: 'rgba(255,255,255,0.92)' }]}>
-          <Text style={styles.speciesEmoji}>{SPECIES_EMOJI[animal.species]}</Text>
+          <Text style={styles.speciesEmoji}>{getSpeciesEmoji(animal.species)}</Text>
         </View>
       </View>
 

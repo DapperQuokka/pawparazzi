@@ -3,17 +3,10 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { getSpeciesEmoji } from '@/constants/species';
 import { BrandColors, Spacing } from '@/constants/theme';
 import { formatAge, formatDistance, getAnimalById } from '@/data/animals';
 import { useTheme } from '@/hooks/use-theme';
-
-const SPECIES_EMOJI: Record<string, string> = {
-  dog: '🐕',
-  cat: '🐈',
-  rabbit: '🐇',
-  bird: '🐦',
-  other: '🐾',
-};
 
 const SIZE_LABEL: Record<string, string> = {
   small: 'Small',
@@ -99,7 +92,7 @@ export default function AnimalProfileScreen() {
           {/* Stat chips */}
           <View style={styles.statRow}>
             <StatChip
-              emoji={SPECIES_EMOJI[animal.species]}
+              emoji={getSpeciesEmoji(animal.species)}
               label={animal.species.charAt(0).toUpperCase() + animal.species.slice(1)}
               theme={theme}
             />

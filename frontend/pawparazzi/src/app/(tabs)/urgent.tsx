@@ -5,17 +5,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnimalCard } from '@/components/animal-card';
 import { SearchBar } from '@/components/search-bar';
+import { SPECIES_CATEGORIES } from '@/constants/species';
 import { BrandColors, BottomTabInset, Spacing } from '@/constants/theme';
 import { ANIMALS, type Animal } from '@/data/animals';
 import { useTheme } from '@/hooks/use-theme';
-
-const CATEGORIES = [
-  { id: 'all', label: 'All Pets', emoji: '🐾' },
-  { id: 'dog', label: 'Dogs', emoji: '🐕' },
-  { id: 'cat', label: 'Cats', emoji: '🐈' },
-  { id: 'rabbit', label: 'Rabbits', emoji: '🐇' },
-  { id: 'bird', label: 'Birds', emoji: '🐦' },
-] as const; 
 
 export default function UrgentScreen() {
   const theme = useTheme();
@@ -60,7 +53,7 @@ export default function UrgentScreen() {
 
         {/* Category Pills */}
         <View style={styles.categoriesRow}>
-          {CATEGORIES.map(cat => {
+          {SPECIES_CATEGORIES.filter(cat => cat.id !== 'other').map(cat => {
             const active = selectedCategory === cat.id;
             return (
               <Pressable

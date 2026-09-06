@@ -1,4 +1,7 @@
-export type Species = 'dog' | 'cat' | 'rabbit' | 'bird' | 'other';
+import type { Species, CategoryOption } from '@/constants/species';
+export { SPECIES_EMOJI, SPECIES_CATEGORIES, getSpeciesEmoji } from '@/constants/species';
+export type { Species, CategoryOption };
+
 export type Size = 'small' | 'medium' | 'large';
 export type Gender = 'male' | 'female';
 
