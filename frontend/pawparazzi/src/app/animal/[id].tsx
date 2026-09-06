@@ -1,11 +1,19 @@
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Linking,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getSpeciesEmoji } from '@/constants/species';
 import { BrandColors, Spacing } from '@/constants/theme';
-import { formatAge, formatDistance, getAnimalById } from '@/data/animals';
+import { formatAge, formatDistance, getAnimalById, getShelterByName } from '@/data/animals';
 import { useTheme } from '@/hooks/use-theme';
 
 const SIZE_LABEL: Record<string, string> = {
@@ -32,15 +40,26 @@ export default function AnimalProfileScreen() {
     );
   }
 
+  const shelter = getShelterByName(animal.shelter);
   const paddingBottom = insets.bottom + Spacing.three;
-  const ctaHeight = 64 + paddingBottom;
+
+  const handleShelterPress = () => {
+    router.push({ pathname: '/shelter/[id]', params: { id: shelter.id } } as any);
+  };
+
+  const handleContactPress = () => {
+    const url = `tel:${shelter.phone.replace(/[^0-9+]/g, '')}`;
+    Linking.openURL(url).catch(() => {
+      handleShelterPress();
+    });
+  };
 
   return (
     <View style={[styles.root, { backgroundColor: theme.background }]}>
       {/* ── Scrollable content ── */}
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={{ paddingBottom: ctaHeight + Spacing.four }}
+        contentContainerStyle={{ paddingBottom: Spacing.four }}
         showsVerticalScrollIndicator={false}
         bounces>
 
@@ -113,20 +132,24 @@ export default function AnimalProfileScreen() {
             />
           </View>
 
-          {/* Shelter info */}
-          <View
-            style={[
+          {/* Shelter info — Clickable to open Shelter Profile */}
+          <Pressable
+            onPress={handleShelterPress}
+            style={({ pressed }) => [
               styles.shelterRow,
               { backgroundColor: theme.backgroundElement, borderRadius: 14 },
+              pressed && { opacity: 0.8 },
             ]}>
             <View style={[styles.shelterIcon, { backgroundColor: BrandColors.accentMuted }]}>
               <Text style={styles.shelterIconText}>🏠</Text>
             </View>
             <View style={styles.shelterInfo}>
               <Text style={[styles.shelterLabel, { color: theme.textSecondary }]}>Shelter</Text>
-              <Text style={[styles.shelterName, { color: theme.text }]}>{animal.shelter}</Text>
+              <Text style={[styles.shelterName, { color: theme.text }]}>
+                {animal.shelter} <Text style={{ color: BrandColors.accent }}>➔</Text>
+              </Text>
             </View>
-          </View>
+          </Pressable>
 
           {/* Bio */}
           <View style={styles.section}>
@@ -159,17 +182,17 @@ export default function AnimalProfileScreen() {
           {
             backgroundColor: theme.background,
             paddingBottom: paddingBottom,
-            // Simulate a top border / shadow
             borderTopWidth: StyleSheet.hairlineWidth,
             borderTopColor: theme.backgroundElement,
           },
         ]}>
         <Pressable
+          onPress={handleShelterPress}
           style={({ pressed }) => [
             styles.ctaButton,
             { backgroundColor: pressed ? BrandColors.accentDark : BrandColors.accent },
           ]}>
-          <Text style={styles.ctaText}>🐾 Contact {animal.shelter}</Text>
+          <Text style={styles.ctaText}>🏠 View {animal.shelter}&apos;s Profile</Text>
         </Pressable>
       </View>
     </View>
@@ -383,10 +406,6 @@ const styles = StyleSheet.create({
   },
   // CTA
   ctaContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     paddingHorizontal: Spacing.three,
     paddingTop: Spacing.two,
   },

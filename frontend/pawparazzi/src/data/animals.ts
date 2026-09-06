@@ -1,6 +1,8 @@
 import type { Species, CategoryOption } from '@/constants/species';
 export { SPECIES_EMOJI, SPECIES_CATEGORIES, getSpeciesEmoji } from '@/constants/species';
 export type { Species, CategoryOption };
+export type { Shelter } from './shelters';
+export { SHELTERS, getShelterById, getShelterByName } from './shelters';
 
 export type Size = 'small' | 'medium' | 'large';
 export type Gender = 'male' | 'female';
@@ -163,4 +165,9 @@ export function formatAge(months: number): string {
 /** Format distance to a tidy label. */
 export function formatDistance(km: number): string {
   return km < 1 ? `${Math.round(km * 1000)}m` : `${km.toFixed(1)} km`;
+}
+
+/** Get all animals belonging to a specific shelter. */
+export function getAnimalsForShelter(shelterName: string): Animal[] {
+  return ANIMALS.filter(a => a.shelter.toLowerCase() === shelterName.toLowerCase());
 }

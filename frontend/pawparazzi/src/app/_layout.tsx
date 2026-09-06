@@ -28,6 +28,10 @@ export default function RootLayout() {
             name="animal/[id]"
             options={{ headerShown: false, presentation: 'card' }}
           />
+          <Stack.Screen
+            name="shelter/[id]"
+            options={{ headerShown: false, presentation: 'card' }}
+          />
         </Stack>
       </ThemeProvider>
     </AuthProvider>
