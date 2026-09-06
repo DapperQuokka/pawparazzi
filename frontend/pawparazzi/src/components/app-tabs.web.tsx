@@ -18,7 +18,7 @@ import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 /**
  * Web tab bar — uses expo-router/ui's Tabs/TabList.
  * The (tabs) group uses parentheses which are invisible in URLs,
- * so hrefs remain "/" and "/explore".
+ * so hrefs remain "/", "/explore", "/profile", and "/auth".
  */
 export default function AppTabs() {
   return (
@@ -31,6 +31,12 @@ export default function AppTabs() {
           </TabTrigger>
           <TabTrigger name="explore" href="/explore" asChild>
             <TabButton>Explore</TabButton>
+          </TabTrigger>
+          <TabTrigger name="profile" href="/profile" asChild>
+            <TabButton>Profile</TabButton>
+          </TabTrigger>
+          <TabTrigger name="auth" href="/auth" asChild>
+            <TabButton>Log In</TabButton>
           </TabTrigger>
         </CustomTabList>
       </TabList>
