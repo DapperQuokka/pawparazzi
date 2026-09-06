@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { FlatList, Platform, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -11,6 +11,9 @@ import { useAnimals } from '@/context/animal-context';
 import type { Animal } from '@/data/animals';
 import { useTheme } from '@/hooks/use-theme';
 
+import { supabase } from '../../../lib/supabase';
+
+
 const DEFAULT_FILTERS: FilterState = {
   species: 'all',
   size: 'any',
@@ -20,7 +23,25 @@ const DEFAULT_FILTERS: FilterState = {
 export default function AnimalListingScreen() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const { animals } = useAnimals();
+	const [animals, setAnimals] = useState<Animal[]>([]);
+
+	useEffect (() => {
+		getAnimals()
+	}, [])
+
+	async function getAnimals() {
+
+		const { data, error } = await supabase.from('animals').select()
+
+		if (error) {
+			console.error(`Error: ${error.message}`);
+			return
+		}
+
+		setAnimals(data ?? [])
+
+		console.log(data)
+	}
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
