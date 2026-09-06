@@ -31,6 +31,8 @@ export default function ProfileScreen() {
   const [editInstagram, setEditInstagram] = useState('');
   const [editBio, setEditBio] = useState('');
   const [editRole, setEditRole] = useState<UserRole>('Adopter');
+  const [editAddress, setEditAddress] = useState('');
+  const [editWebsite, setEditWebsite] = useState('');
 
   const paddingTop = Platform.OS === 'ios' ? insets.top : insets.top + Spacing.two;
   const paddingBottom = insets.bottom + BottomTabInset + Spacing.four;
@@ -43,6 +45,8 @@ export default function ProfileScreen() {
     setEditInstagram(user.instagramHandle);
     setEditBio(user.bio || '');
     setEditRole(user.role);
+    setEditAddress(user.address || '');
+    setEditWebsite(user.websiteUrl || '');
     setIsEditModalOpen(true);
   };
 
@@ -56,6 +60,8 @@ export default function ProfileScreen() {
         : `@${editInstagram.trim()}`,
       bio: editBio.trim(),
       role: editRole,
+      address: editRole === 'Shelter' ? editAddress.trim() : undefined,
+      websiteUrl: editRole === 'Shelter' ? editWebsite.trim() : undefined,
     });
     setIsEditModalOpen(false);
   };
@@ -170,16 +176,52 @@ export default function ProfileScreen() {
           </Pressable>
         </View>
 
+        {/* ── Shelter Website Section (Shelters only) ── */}
+        {user.role === 'Shelter' && (
+          <View style={[styles.sectionCard, { backgroundColor: theme.backgroundElement }]}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionIcon}>🌐</Text>
+              <Text style={[styles.sectionTitle, { color: theme.text }]}>External Website</Text>
+            </View>
+            <Text style={[styles.instagramHandleText, { color: BrandColors.accent }]}>
+              {user.websiteUrl || 'No website set'}
+            </Text>
+            {user.websiteUrl ? (
+              <Pressable
+                onPress={() => {
+                  if (user.websiteUrl) Linking.openURL(user.websiteUrl).catch(() => {});
+                }}
+                style={({ pressed }) => [
+                  styles.instagramLinkButton,
+                  { backgroundColor: BrandColors.accent },
+                  pressed && { opacity: 0.8 },
+                ]}>
+                <Text style={styles.instagramLinkText}>🌐 Open Website</Text>
+              </Pressable>
+            ) : null}
+          </View>
+        )}
+
         {/* ── User Information Details ── */}
         <View style={[styles.sectionCard, { backgroundColor: theme.backgroundElement }]}>
           <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: Spacing.two }]}>
             Account Details
           </Text>
 
-          <DetailRow label="Full Name" value={user.name} theme={theme} />
+          <DetailRow
+            label={user.role === 'Shelter' ? 'Shelter Name' : 'Full Name'}
+            value={user.name}
+            theme={theme}
+          />
           <DetailRow label="Username" value={`@${user.username}`} theme={theme} />
           <DetailRow label="Email Address" value={user.email} theme={theme} />
           <DetailRow label="Role" value={user.role} theme={theme} />
+          {user.role === 'Shelter' && (
+            <>
+              <DetailRow label="Address" value={user.address || 'Not specified'} theme={theme} />
+              <DetailRow label="Website" value={user.websiteUrl || 'Not specified'} theme={theme} />
+            </>
+          )}
           <DetailRow label="Instagram" value={user.instagramHandle} theme={theme} isLast />
         </View>
 
@@ -214,12 +256,42 @@ export default function ProfileScreen() {
           <View style={[styles.modalCard, { backgroundColor: theme.background }]}>
             <Text style={[styles.modalTitle, { color: theme.text }]}>Edit Profile</Text>
 
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Full Name</Text>
+            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+              {editRole === 'Shelter' ? 'Shelter Name' : 'Full Name'}
+            </Text>
             <TextInput
               value={editName}
               onChangeText={setEditName}
               style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text }]}
             />
+
+            {editRole === 'Shelter' && (
+              <>
+                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+                  Shelter Address
+                </Text>
+                <TextInput
+                  value={editAddress}
+                  onChangeText={setEditAddress}
+                  placeholder="123 Rescue Way, Austin, TX"
+                  placeholderTextColor={theme.textSecondary}
+                  style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text }]}
+                />
+
+                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+                  External Website URL
+                </Text>
+                <TextInput
+                  value={editWebsite}
+                  onChangeText={setEditWebsite}
+                  placeholder="https://happypawsrescue.org"
+                  placeholderTextColor={theme.textSecondary}
+                  style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text }]}
+                  autoCapitalize="none"
+                  keyboardType="url"
+                />
+              </>
+            )}
 
             <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Username</Text>
             <TextInput

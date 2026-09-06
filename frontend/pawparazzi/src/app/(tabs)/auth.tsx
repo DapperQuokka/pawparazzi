@@ -34,6 +34,8 @@ export default function AuthScreen() {
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [signupInstagram, setSignupInstagram] = useState('');
+  const [signupAddress, setSignupAddress] = useState('');
+  const [signupWebsite, setSignupWebsite] = useState('');
 
   const paddingTop = Platform.OS === 'ios' ? insets.top : insets.top + Spacing.two;
   const paddingBottom = insets.bottom + BottomTabInset + Spacing.four;
@@ -49,7 +51,16 @@ export default function AuthScreen() {
 
   const handleSignupSubmit = () => {
     if (!signupEmail.trim() || !signupName.trim()) {
-      Alert.alert('Missing fields', 'Please enter your name and email address.');
+      Alert.alert(
+        'Missing fields',
+        signupRole === 'Shelter'
+          ? 'Please enter shelter name and email address.'
+          : 'Please enter your name and email address.'
+      );
+      return;
+    }
+    if (signupRole === 'Shelter' && (!signupAddress.trim() || !signupWebsite.trim())) {
+      Alert.alert('Missing shelter details', 'Please enter shelter address and website URL.');
       return;
     }
     signup({
@@ -57,6 +68,8 @@ export default function AuthScreen() {
       username: signupUsername.trim().replace(/^@/, '') || signupEmail.split('@')[0],
       email: signupEmail.trim(),
       role: signupRole,
+      address: signupRole === 'Shelter' ? signupAddress.trim() : undefined,
+      websiteUrl: signupRole === 'Shelter' ? signupWebsite.trim() : undefined,
       instagramHandle: signupInstagram.trim()
         ? signupInstagram.trim().startsWith('@')
           ? signupInstagram.trim()
@@ -210,20 +223,50 @@ export default function AuthScreen() {
               ))}
             </View>
 
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Full Name</Text>
+            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+              {signupRole === 'Shelter' ? 'Shelter Name' : 'Full Name'}
+            </Text>
             <TextInput
               value={signupName}
               onChangeText={setSignupName}
-              placeholder="e.g. Alex Morgan"
+              placeholder={signupRole === 'Shelter' ? 'e.g. Happy Paws Rescue' : 'e.g. Alex Morgan'}
               placeholderTextColor={theme.textSecondary}
               style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
             />
+
+            {signupRole === 'Shelter' && (
+              <>
+                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+                  Shelter Address
+                </Text>
+                <TextInput
+                  value={signupAddress}
+                  onChangeText={setSignupAddress}
+                  placeholder="123 Rescue Way, Austin, TX 78701"
+                  placeholderTextColor={theme.textSecondary}
+                  style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
+                />
+
+                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+                  External Website URL
+                </Text>
+                <TextInput
+                  value={signupWebsite}
+                  onChangeText={setSignupWebsite}
+                  placeholder="https://happypawsrescue.org"
+                  placeholderTextColor={theme.textSecondary}
+                  style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
+                  autoCapitalize="none"
+                  keyboardType="url"
+                />
+              </>
+            )}
 
             <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Username</Text>
             <TextInput
               value={signupUsername}
               onChangeText={setSignupUsername}
-              placeholder="alex_adopts"
+              placeholder={signupRole === 'Shelter' ? 'happypaws_tx' : 'alex_adopts'}
               placeholderTextColor={theme.textSecondary}
               style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
               autoCapitalize="none"
@@ -233,7 +276,7 @@ export default function AuthScreen() {
             <TextInput
               value={signupEmail}
               onChangeText={setSignupEmail}
-              placeholder="alex@example.com"
+              placeholder={signupRole === 'Shelter' ? 'info@happypawsrescue.org' : 'alex@example.com'}
               placeholderTextColor={theme.textSecondary}
               style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
               autoCapitalize="none"

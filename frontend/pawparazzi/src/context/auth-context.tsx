@@ -11,6 +11,8 @@ export type UserProfile = {
   instagramHandle: string;
   bio?: string;
   avatarUrl?: any;
+  address?: string;
+  websiteUrl?: string;
 };
 
 type AuthContextType = {
@@ -41,12 +43,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = (email: string, role: UserRole = 'Adopter') => {
     setUser({
       id: 'usr_' + Date.now(),
-      name: email.split('@')[0].replace('.', ' '),
+      name: role === 'Shelter' ? 'Happy Paws Shelter' : email.split('@')[0].replace('.', ' '),
       username: email.split('@')[0],
       email: email,
       role: role,
       instagramHandle: `@${email.split('@')[0]}_ig`,
-      bio: role === 'Shelter' ? 'Licensed animal rescue shelter.' : 'Passionate pet adopter.',
+      bio: role === 'Shelter' ? 'Licensed animal rescue shelter connecting pets with loving homes.' : 'Passionate pet adopter.',
+      address: role === 'Shelter' ? '123 Rescue Way, Austin, TX 78701' : undefined,
+      websiteUrl: role === 'Shelter' ? 'https://happypawsrescue.org' : undefined,
       avatarUrl: require('@/assets/images/pawparazzi/kenzo.jpeg'),
     });
   };
