@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = (email: string, role: UserRole = 'Adopter') => {
     setUser({
       id: 'usr_' + Date.now(),
-      name: role === 'Shelter' ? 'Happy Paws Shelter' : email.split('@')[0].replace('.', ' '),
+      name: role === 'Shelter' ? 'Happy Paws Rescue' : email.split('@')[0].replace('.', ' '),
       username: email.split('@')[0],
       email: email,
       role: role,

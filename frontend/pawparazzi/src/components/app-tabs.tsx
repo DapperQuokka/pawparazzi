@@ -2,6 +2,7 @@ import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useColorScheme } from 'react-native';
 
 import { Colors } from '@/constants/theme';
+import { useAuth } from '@/context/auth-context';
 
 /**
  * Native tab bar — Trigger names reference route files inside the (tabs) group.
@@ -10,6 +11,8 @@ import { Colors } from '@/constants/theme';
 export default function AppTabs() {
   const scheme = useColorScheme();
   const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];
+  const { user } = useAuth();
+  const isShelter = user?.role === 'Shelter';
 
   return (
     <NativeTabs
@@ -31,6 +34,16 @@ export default function AppTabs() {
           renderingMode="template"
         />
       </NativeTabs.Trigger>
+
+      {isShelter && (
+        <NativeTabs.Trigger name="manage">
+          <NativeTabs.Trigger.Label>Manage</NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Icon
+            src={require('@/assets/images/tabIcons/explore.png')}
+            renderingMode="template"
+          />
+        </NativeTabs.Trigger>
+      )}
 
       <NativeTabs.Trigger name="profile">
         <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>

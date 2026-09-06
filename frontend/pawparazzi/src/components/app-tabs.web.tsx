@@ -6,14 +6,13 @@ import {
   TabTriggerSlotProps,
   TabListProps,
 } from 'expo-router/ui';
-import { SymbolView } from 'expo-symbols';
 import { Pressable, useColorScheme, View, StyleSheet } from 'react-native';
 
-import { ExternalLink } from './external-link';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
+import { useAuth } from '@/context/auth-context';
 
 /**
  * Web tab bar — uses expo-router/ui's Tabs/TabList.
@@ -21,6 +20,9 @@ import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
  * so hrefs remain "/", "/urgent", "/profile", and "/auth".
  */
 export default function AppTabs() {
+  const { user } = useAuth();
+  const isShelter = user?.role === 'Shelter';
+
   return (
     <Tabs>
       <TabSlot style={{ height: '100%' }} />
@@ -32,6 +34,11 @@ export default function AppTabs() {
           <TabTrigger name="urgent" href="/urgent" asChild>
             <TabButton>Urgent</TabButton>
           </TabTrigger>
+          {isShelter && (
+            <TabTrigger name="manage" href="/manage" asChild>
+              <TabButton>Manage</TabButton>
+            </TabTrigger>
+          )}
           <TabTrigger name="profile" href="/profile" asChild>
             <TabButton>Profile</TabButton>
           </TabTrigger>
