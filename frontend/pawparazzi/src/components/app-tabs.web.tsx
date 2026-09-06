@@ -15,6 +15,11 @@ import { ThemedView } from './themed-view';
 
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 
+/**
+ * Web tab bar — uses expo-router/ui's Tabs/TabList.
+ * The (tabs) group uses parentheses which are invisible in URLs,
+ * so hrefs remain "/" and "/explore".
+ */
 export default function AppTabs() {
   return (
     <Tabs>
@@ -22,7 +27,7 @@ export default function AppTabs() {
       <TabList asChild>
         <CustomTabList>
           <TabTrigger name="home" href="/" asChild>
-            <TabButton>Home</TabButton>
+            <TabButton>Adopt</TabButton>
           </TabTrigger>
           <TabTrigger name="explore" href="/explore" asChild>
             <TabButton>Explore</TabButton>
@@ -55,7 +60,7 @@ export function CustomTabList(props: TabListProps) {
     <View {...props} style={styles.tabListContainer}>
       <ThemedView type="backgroundElement" style={styles.innerContainer}>
         <ThemedText type="smallBold" style={styles.brandText}>
-          Expo Starter
+          Pawparazzi 🐾
         </ThemedText>
 
         {props.children}

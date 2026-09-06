@@ -26,6 +26,20 @@ export const Colors = {
 
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 
+/**
+ * Pawparazzi brand palette — platform-agnostic accent colours.
+ */
+export const BrandColors = {
+  accent: '#FF6B35',
+  accentLight: '#FFF0EB',
+  accentMuted: 'rgba(255, 107, 53, 0.12)',
+  accentDark: '#CC5229',
+  positive: '#22C55E',
+  positiveMuted: 'rgba(34, 197, 94, 0.12)',
+  overlay: 'rgba(0, 0, 0, 0.42)',
+  overlayLight: 'rgba(0, 0, 0, 0.18)',
+} as const;
+
 export const Fonts = Platform.select({
   ios: {
     /** iOS `UIFontDescriptorSystemDesignDefault` */
