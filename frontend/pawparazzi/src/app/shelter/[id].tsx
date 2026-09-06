@@ -13,13 +13,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnimalCard } from '@/components/animal-card';
 import { BrandColors, Spacing } from '@/constants/theme';
-import { getAnimalsForShelter, getShelterById, getShelterByName } from '@/data/animals';
+import { useAnimals } from '@/context/animal-context';
+import { getShelterById, getShelterByName } from '@/data/animals';
 import { useTheme } from '@/hooks/use-theme';
 
 export default function ShelterProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const { getAnimalsForShelter } = useAnimals();
 
   const shelter = getShelterById(id) || getShelterByName(id);
 

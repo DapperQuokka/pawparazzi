@@ -7,19 +7,21 @@ import { AnimalCard } from '@/components/animal-card';
 import { SearchBar } from '@/components/search-bar';
 import { SPECIES_CATEGORIES } from '@/constants/species';
 import { BrandColors, BottomTabInset, Spacing } from '@/constants/theme';
-import { ANIMALS, type Animal } from '@/data/animals';
+import { useAnimals } from '@/context/animal-context';
+import type { Animal } from '@/data/animals';
 import { useTheme } from '@/hooks/use-theme';
 
 export default function UrgentScreen() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const { animals } = useAnimals();
 
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredAnimals = useMemo<Animal[]>(() => {
     const q = searchQuery.toLowerCase().trim();
-    return ANIMALS.filter(animal => {
+    return animals.filter(animal => {
       if (selectedCategory !== 'all' && animal.species !== selectedCategory) {
         return false;
       }

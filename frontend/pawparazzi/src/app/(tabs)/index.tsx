@@ -7,7 +7,8 @@ import { AnimalCard } from '@/components/animal-card';
 import { FilterBar, type FilterState } from '@/components/filter-bar';
 import { SearchBar } from '@/components/search-bar';
 import { BrandColors, BottomTabInset, Spacing } from '@/constants/theme';
-import { ANIMALS, type Animal } from '@/data/animals';
+import { useAnimals } from '@/context/animal-context';
+import type { Animal } from '@/data/animals';
 import { useTheme } from '@/hooks/use-theme';
 
 const DEFAULT_FILTERS: FilterState = {
@@ -19,13 +20,14 @@ const DEFAULT_FILTERS: FilterState = {
 export default function AnimalListingScreen() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const { animals } = useAnimals();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
 
   const filteredAnimals = useMemo<Animal[]>(() => {
     const q = searchQuery.toLowerCase().trim();
-    return ANIMALS.filter(animal => {
+    return animals.filter(animal => {
       if (q && !animal.name.toLowerCase().includes(q) && !animal.breed.toLowerCase().includes(q)) {
         return false;
       }

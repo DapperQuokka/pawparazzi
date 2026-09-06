@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import {
@@ -11,8 +12,10 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { AddAnimalModal } from '@/components/add-animal-modal';
 import { BrandColors, BottomTabInset, Spacing } from '@/constants/theme';
-import { ANIMALS, formatAge, type Animal } from '@/data/animals';
+import { formatAge, type Animal } from '@/data/animals';
+import { useAnimals } from '@/context/animal-context';
 import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/hooks/use-theme';
 
@@ -20,6 +23,9 @@ export default function ManageScreen() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { user, isLoggedIn } = useAuth();
+  const { getAnimalsForShelter } = useAnimals();
+
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const paddingTop = Platform.OS === 'ios' ? insets.top : insets.top + Spacing.two;
   const paddingBottom = insets.bottom + BottomTabInset + Spacing.four;
@@ -56,14 +62,10 @@ export default function ManageScreen() {
     );
   }
 
-  const shelterAnimals = ANIMALS.filter(a => {
-    const sName = a.shelter.toLowerCase().trim();
-    const uName = user.name.toLowerCase().trim();
-    return sName === uName || sName.includes(uName) || uName.includes(sName);
-  });
+  const shelterAnimals = getAnimalsForShelter(user.name);
 
   const handleAddAnimal = () => {
-    Alert.alert('Add Animal', 'Adding new animal listings is coming soon!', [{ text: 'OK' }]);
+    setIsAddModalOpen(true);
   };
 
   return (
@@ -160,6 +162,11 @@ export default function ManageScreen() {
         )}
 
       </ScrollView>
+
+      <AddAnimalModal
+        visible={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+      />
     </View>
   );
 }
