@@ -21,45 +21,30 @@ export default function AppTabs() {
       labelStyle={{ selected: { color: colors.text } }}>
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>Adopt</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/home.png')}
-          renderingMode="template"
-        />
+        <NativeTabs.Trigger.Icon sf="pawprint.fill" />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="urgent">
         <NativeTabs.Trigger.Label>Urgent</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/explore.png')}
-          renderingMode="template"
-        />
+        <NativeTabs.Trigger.Icon sf="flame.fill" />
       </NativeTabs.Trigger>
 
       {isShelter && (
         <NativeTabs.Trigger name="manage">
           <NativeTabs.Trigger.Label>Manage</NativeTabs.Trigger.Label>
-          <NativeTabs.Trigger.Icon
-            src={require('@/assets/images/tabIcons/explore.png')}
-            renderingMode="template"
-          />
+          <NativeTabs.Trigger.Icon sf="slider.horizontal.3" />
         </NativeTabs.Trigger>
       )}
 
       {isLoggedIn ? (
         <NativeTabs.Trigger name="profile">
           <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
-          <NativeTabs.Trigger.Icon
-            src={require('@/assets/images/tabIcons/home.png')}
-            renderingMode="template"
-          />
+          <NativeTabs.Trigger.Icon sf="person.crop.circle.fill" />
         </NativeTabs.Trigger>
       ) : (
         <NativeTabs.Trigger name="auth">
           <NativeTabs.Trigger.Label>Log In</NativeTabs.Trigger.Label>
-          <NativeTabs.Trigger.Icon
-            src={require('@/assets/images/tabIcons/explore.png')}
-            renderingMode="template"
-          />
+          <NativeTabs.Trigger.Icon sf="person.badge.key.fill" />
         </NativeTabs.Trigger>
       )}
     </NativeTabs>
