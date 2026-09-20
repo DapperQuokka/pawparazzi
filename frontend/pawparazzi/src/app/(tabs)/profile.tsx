@@ -163,17 +163,19 @@ export default function ProfileScreen() {
             <Text style={styles.sectionIcon}>📸</Text>
             <Text style={[styles.sectionTitle, { color: theme.text }]}>Instagram Account</Text>
           </View>
-          <Text style={[styles.instagramHandleText, { color: BrandColors.accent }]}>
-            {user.instagramHandle || '@not_connected'}
+          <Text style={[styles.instagramHandleText, { color: user.instagramHandle ? BrandColors.accent : theme.textSecondary }]}>
+            {user.instagramHandle || 'Not connected'}
           </Text>
-          <Pressable
-            onPress={handleOpenInstagram}
-            style={({ pressed }) => [
-              styles.instagramLinkButton,
-              pressed && { opacity: 0.8 },
-            ]}>
-            <Text style={styles.instagramLinkText}>🔗 Visit Instagram Profile</Text>
-          </Pressable>
+          {user.instagramHandle ? (
+            <Pressable
+              onPress={handleOpenInstagram}
+              style={({ pressed }) => [
+                styles.instagramLinkButton,
+                pressed && { opacity: 0.8 },
+              ]}>
+              <Text style={styles.instagramLinkText}>🔗 Visit Instagram Profile</Text>
+            </Pressable>
+          ) : null}
         </View>
 
         {/* ── Shelter Website Section (Shelters only) ── */}
@@ -222,7 +224,7 @@ export default function ProfileScreen() {
               <DetailRow label="Website" value={user.websiteUrl || 'Not specified'} theme={theme} />
             </>
           )}
-          <DetailRow label="Instagram" value={user.instagramHandle} theme={theme} isLast />
+          <DetailRow label="Instagram" value={user.instagramHandle || 'Not connected'} theme={theme} isLast />
         </View>
 
         {/* ── Actions ── */}

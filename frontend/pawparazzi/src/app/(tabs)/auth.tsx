@@ -19,7 +19,7 @@ import { useTheme } from '@/hooks/use-theme';
 export default function AuthScreen() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const { login, signup, isLoggedIn, user } = useAuth();
+  const { login, signup, signIn, signUp, isLoggedIn, user } = useAuth();
 
   const [mode, setMode] = useState<'login' | 'signup'>('login');
 
@@ -40,16 +40,25 @@ export default function AuthScreen() {
   const paddingTop = Platform.OS === 'ios' ? insets.top : insets.top + Spacing.two;
   const paddingBottom = insets.bottom + BottomTabInset + Spacing.four;
 
-  const handleLoginSubmit = () => {
+  const handleLoginSubmit = async () => {
     if (!loginEmail.trim()) {
-      Alert.alert('Missing field', 'Please enter your email or username.');
+      Alert.alert('Missing field', 'Please enter your email address.');
       return;
     }
-    login(loginEmail.trim());
-    router.replace('/profile' as any);
+    if (loginPassword) {
+      try {
+        await signIn(loginEmail.trim(), loginPassword);
+        router.replace('/profile' as any);
+      } catch (e) {
+        // Alert is displayed by AuthContext
+      }
+    } else {
+      login(loginEmail.trim());
+      router.replace('/profile' as any);
+    }
   };
 
-  const handleSignupSubmit = () => {
+  const handleSignupSubmit = async () => {
     if (!signupEmail.trim() || !signupName.trim()) {
       Alert.alert(
         'Missing fields',
@@ -63,7 +72,8 @@ export default function AuthScreen() {
       Alert.alert('Missing shelter details', 'Please enter shelter address and website URL.');
       return;
     }
-    signup({
+
+    const profileDetails = {
       name: signupName.trim(),
       username: signupUsername.trim().replace(/^@/, '') || signupEmail.split('@')[0],
       email: signupEmail.trim(),
@@ -74,14 +84,24 @@ export default function AuthScreen() {
         ? signupInstagram.trim().startsWith('@')
           ? signupInstagram.trim()
           : `@${signupInstagram.trim()}`
-        : `@${signupName.toLowerCase().replace(/\s+/g, '')}`,
+        : '',
       bio:
         signupRole === 'Shelter'
           ? 'Licensed shelter unit connecting animals with loving homes.'
           : 'Ready to adopt a new family member!',
-      avatarUrl: require('@/assets/images/pawparazzi/kenzo.jpeg'),
-    });
-    router.replace('/profile' as any);
+    };
+
+    if (signupPassword) {
+      try {
+        await signUp(signupEmail.trim(), signupPassword, signupRole, profileDetails);
+        router.replace('/profile' as any);
+      } catch (e) {
+        // Alert is displayed by AuthContext
+      }
+    } else {
+      signup(profileDetails);
+      router.replace('/profile' as any);
+    }
   };
 
   const handleDemoLogin = (role: UserRole) => {
@@ -141,7 +161,7 @@ export default function AuthScreen() {
         {/* ── Log In Form ── */}
         {mode === 'login' ? (
           <View style={[styles.formCard, { backgroundColor: theme.backgroundElement }]}>
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Email or Username</Text>
+            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Email Address</Text>
             <TextInput
               value={loginEmail}
               onChangeText={setLoginEmail}

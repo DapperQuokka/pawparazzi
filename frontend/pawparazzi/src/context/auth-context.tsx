@@ -1,4 +1,8 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { Alert } from 'react-native';
+import { Session, User } from '@supabase/supabase-js';
+
+import { supabase } from '../../lib/supabase';
 
 export type UserRole = 'Adopter' | 'Shelter';
 
@@ -16,13 +20,36 @@ export type UserProfile = {
 };
 
 type AuthContextType = {
+  session: Session | null;
+  supabaseUser: User | null;
   user: UserProfile | null;
   isLoggedIn: boolean;
+  loading: boolean;
+  signUp: (email: string, password: string, role?: UserRole, profile?: Partial<UserProfile>) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
   login: (email: string, role?: UserRole) => void;
   signup: (profile: Omit<UserProfile, 'id'>) => void;
   logout: () => void;
   updateProfile: (updates: Partial<UserProfile>) => void;
 };
+
+/** Consolidates UserProfile object creation from a Supabase User instance */
+export function formatUserProfile(authUser: User): UserProfile {
+  const meta = authUser.user_metadata || {};
+  return {
+    id: authUser.id,
+    name: meta.name || 'Unknown user',
+    username: meta.username || 'Unknown username',
+    email: authUser.email || '',
+    role: meta.role || 'Adopter',
+    instagramHandle: meta.instagramHandle || '',
+    bio: meta.bio || '',
+    address: meta.address,
+    websiteUrl: meta.websiteUrl,
+    avatarUrl: require('@/assets/images/pawparazzi/kenzo.jpeg'),
+  };
+}
 
 const DEFAULT_USER: UserProfile = {
   id: 'usr_1',
@@ -38,7 +65,95 @@ const DEFAULT_USER: UserProfile = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [session, setSession] = useState<Session | null>(null);
+  const [supabaseUser, setSupabaseUser] = useState<User | null>(null);
   const [user, setUser] = useState<UserProfile | null>(DEFAULT_USER);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const initializeSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setSession(session);
+        setSupabaseUser(session?.user ?? null);
+        if (session?.user) {
+          setUser(formatUserProfile(session.user));
+        }
+      } catch (err) {
+        console.error('Error getting Supabase session:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setSupabaseUser(session?.user ?? null);
+      if (session?.user) {
+        setUser(formatUserProfile(session.user));
+      } else {
+        // Fall back to default user if no Supabase session exists
+        setUser(prev => (prev?.id.startsWith('usr_') ? prev : null));
+      }
+      setLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const signUp = async (
+    email: string,
+    password: string,
+    role: UserRole = 'Adopter',
+    profileDetails: Partial<UserProfile> = {}
+  ) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          role,
+          name: profileDetails.name,
+          username: profileDetails.username,
+          instagramHandle: profileDetails.instagramHandle,
+          address: profileDetails.address,
+          websiteUrl: profileDetails.websiteUrl,
+          bio: profileDetails.bio,
+        },
+      },
+    });
+
+    if (error) {
+      Alert.alert('Sign Up Error', error.message);
+      throw error;
+    }
+  };
+
+  const signIn = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      Alert.alert('Sign In Error', error.message);
+      throw error;
+    }
+  };
+
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      Alert.alert('Sign Out Error', error.message);
+    }
+    setSession(null);
+    setSupabaseUser(null);
+    setUser(null);
+  };
 
   const login = (email: string, role: UserRole = 'Adopter') => {
     setUser({
@@ -47,8 +162,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       username: email.split('@')[0],
       email: email,
       role: role,
-      instagramHandle: `@${email.split('@')[0]}_ig`,
-      bio: role === 'Shelter' ? 'Licensed animal rescue shelter connecting pets with loving homes.' : 'Passionate pet adopter.',
+      instagramHandle: '',
+      bio:
+        role === 'Shelter'
+          ? 'Licensed animal rescue shelter connecting pets with loving homes.'
+          : 'Passionate pet adopter.',
       address: role === 'Shelter' ? '123 Rescue Way, Austin, TX 78701' : undefined,
       websiteUrl: role === 'Shelter' ? 'https://happypawsrescue.org' : undefined,
       avatarUrl: require('@/assets/images/pawparazzi/kenzo.jpeg'),
@@ -64,7 +182,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = () => {
-    setUser(null);
+    signOut();
   };
 
   const updateProfile = (updates: Partial<UserProfile>) => {
@@ -74,8 +192,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return (
     <AuthContext.Provider
       value={{
+        session,
+        supabaseUser,
         user,
-        isLoggedIn: !!user,
+        isLoggedIn: !!user || !!session,
+        loading,
+        signUp,
+        signIn,
+        signOut,
         login,
         signup,
         logout,
