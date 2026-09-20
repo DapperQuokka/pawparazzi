@@ -13,17 +13,47 @@ export type Animal = {
   species: Species;
   breed: string;
   /** Age in months */
-  age: number;
+  age: number | null;
   gender: Gender;
   size: Size;
   /** Distance from user in km */
-  distance: number;
+  distance: number | null;
   shelter: string;
   shelterPhone: string;
   bio: string;
   tags: string[];
   imageSource: any;
 };
+
+/** Standard function to construct/normalize an Animal object from raw DB/API data. */
+export function formatAnimal(item: any): Animal {
+  let ageInMonths = item.age;
+  if ((ageInMonths === undefined || ageInMonths === null) && item.dob) {
+    const dobDate = new Date(item.dob);
+    const now = new Date();
+    const diffMonths =
+      (now.getFullYear() - dobDate.getFullYear()) * 12 + (now.getMonth() - dobDate.getMonth());
+    ageInMonths = Math.max(0, diffMonths);
+  }
+
+  return {
+    id: item.id,
+    name: item.name ?? '',
+    species: item.species ?? 'Unknown',
+    breed: item.breed ?? 'Unknown',
+    age: ageInMonths ?? null,
+    gender: item.gender ?? 'unknown',
+    size: item.size ?? 'unknown',
+    distance: item.distance ?? null,
+    shelter: item.shelter ?? '',
+    shelterPhone: item.shelterPhone ?? item.shelter_phone ?? '',
+    bio: item.bio ?? '',
+    tags: item.tags ?? [],
+    imageSource: item.image_url
+      ? { uri: item.image_url }
+      : (item.imageSource ?? require('@/assets/images/pawparazzi/kenzo.jpeg')),
+  };
+}
 
 export const ANIMALS: Animal[] = [
   {
@@ -154,7 +184,7 @@ export function getAnimalById(id: string): Animal | undefined {
 }
 
 /** Format age in months to a human-readable string. */
-export function formatAge(months?: number): string {
+export function formatAge(months?: number | null): string {
   if (months === undefined || months === null || isNaN(months)) return 'Unknown age';
   if (months < 12) return `${months}mo`;
   const years = Math.floor(months / 12);
@@ -164,7 +194,7 @@ export function formatAge(months?: number): string {
 }
 
 /** Format distance to a tidy label. */
-export function formatDistance(km?: number): string {
+export function formatDistance(km?: number | null): string {
   if (km === undefined || km === null || isNaN(km)) return 'Unknown km';
   return km < 1 ? `${Math.round(km * 1000)}m` : `${km.toFixed(1)} km`;
 }

@@ -1,6 +1,8 @@
+import { useState, useEffect } from 'react';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import {
+  ActivityIndicator,
   Linking,
   Platform,
   Pressable,
@@ -13,8 +15,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getSpeciesEmoji } from '@/constants/species';
 import { BrandColors, Spacing } from '@/constants/theme';
-import { formatAge, formatDistance, getAnimalById, getShelterByName } from '@/data/animals';
+import { useAnimals } from '@/context/animal-context';
+import type { Animal } from '@/data/animals';
+import { formatAge, formatAnimal, formatDistance, getAnimalById, getShelterByName } from '@/data/animals';
 import { useTheme } from '@/hooks/use-theme';
+
+import { supabase } from '../../../lib/supabase';
 
 const SIZE_LABEL: Record<string, string> = {
   small: 'Small',
@@ -26,8 +32,38 @@ export default function AnimalProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const { getAnimalById: getAnimalFromContext } = useAnimals();
 
-  const animal = getAnimalById(id);
+  const [animal, setAnimal] = useState<Animal | undefined>(() => {
+    return (id ? getAnimalFromContext(id) : undefined) || (id ? getAnimalById(id) : undefined);
+  });
+  const [loading, setLoading] = useState<boolean>(!animal);
+
+  useEffect(() => {
+    if (animal || !id) return;
+    async function fetchFromSupabase() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('animals')
+        .select()
+        .eq('id', id)
+        .maybeSingle();
+
+      if (data) {
+        setAnimal(formatAnimal(data));
+      }
+      setLoading(false);
+    }
+    fetchFromSupabase();
+  }, [id, animal]);
+
+  if (loading) {
+    return (
+      <View style={[styles.notFound, { backgroundColor: theme.background }]}>
+        <ActivityIndicator size="large" color={BrandColors.accent} />
+      </View>
+    );
+  }
 
   if (!animal) {
     return (
