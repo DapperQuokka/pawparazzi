@@ -67,7 +67,6 @@ export default function UrgentScreen() {
                     backgroundColor: active ? BrandColors.accent : theme.backgroundElement,
                   },
                 ]}>
-                <Text style={styles.pillEmoji}>{cat.emoji}</Text>
                 <Text
                   style={[
                     styles.pillLabel,
@@ -96,9 +95,8 @@ export default function UrgentScreen() {
         <FlatList
           data={filteredAnimals}
           keyExtractor={item => item.id}
-          numColumns={2}
+          numColumns={1}
           contentContainerStyle={[styles.listContent, { paddingBottom }]}
-          columnWrapperStyle={styles.columnWrapper}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           renderItem={({ item }) => (
@@ -169,7 +167,8 @@ const styles = StyleSheet.create({
   },
   cardWrapper: {
     flex: 1,
-    maxWidth: '48.5%',
+		minWidth: '100%',
+		marginBottom: 20
   },
   emptyState: {
     flex: 1,

@@ -115,13 +115,6 @@ export default function AuthScreen() {
 
   return (
     <View style={[styles.root, { backgroundColor: theme.background }]}>
-      <ScrollView
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingTop: paddingTop + Spacing.two, paddingBottom },
-        ]}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled">
         
         {/* Header */}
         <View style={styles.header}>
@@ -133,6 +126,13 @@ export default function AuthScreen() {
               : 'Sign in to contact shelters and adopt pets'}
           </Text>
         </View>
+				<ScrollView
+					contentContainerStyle={[
+						styles.scrollContent,
+						{ paddingTop: Spacing.four, paddingBottom },
+					]}
+					showsVerticalScrollIndicator={false}
+					keyboardShouldPersistTaps="handled">
 
         {/* Mode Switch Segment */}
         <View style={[styles.segmentContainer, { backgroundColor: theme.backgroundElement }]}>
@@ -165,7 +165,7 @@ export default function AuthScreen() {
             <TextInput
               value={loginEmail}
               onChangeText={setLoginEmail}
-              placeholder="alex.morgan@example.com"
+              placeholder="Email"
               placeholderTextColor={theme.textSecondary}
               style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
               autoCapitalize="none"
@@ -176,7 +176,7 @@ export default function AuthScreen() {
             <TextInput
               value={loginPassword}
               onChangeText={setLoginPassword}
-              placeholder="••••••••"
+              placeholder="Password"
               placeholderTextColor={theme.textSecondary}
               secureTextEntry
               style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
@@ -204,14 +204,14 @@ export default function AuthScreen() {
                 onPress={() => handleDemoLogin('Adopter')}
                 style={[styles.demoButton, { backgroundColor: theme.background }]}>
                 <Text style={[styles.demoButtonText, { color: BrandColors.accent }]}>
-                  🐾 Demo Adopter
+                  Demo Adopter
                 </Text>
               </Pressable>
               <Pressable
                 onPress={() => handleDemoLogin('Shelter')}
                 style={[styles.demoButton, { backgroundColor: theme.background }]}>
                 <Text style={[styles.demoButtonText, { color: '#2563EB' }]}>
-                  🏠 Demo Shelter
+                	Demo Shelter
                 </Text>
               </Pressable>
             </View>
@@ -249,7 +249,7 @@ export default function AuthScreen() {
             <TextInput
               value={signupName}
               onChangeText={setSignupName}
-              placeholder={signupRole === 'Shelter' ? 'e.g. Happy Paws Rescue' : 'e.g. Alex Morgan'}
+              placeholder={signupRole === 'Shelter' ? 'Shelter Name' : 'Full Name'}
               placeholderTextColor={theme.textSecondary}
               style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
             />
@@ -262,7 +262,7 @@ export default function AuthScreen() {
                 <TextInput
                   value={signupAddress}
                   onChangeText={setSignupAddress}
-                  placeholder="123 Rescue Way, Austin, TX 78701"
+                  placeholder="Address"
                   placeholderTextColor={theme.textSecondary}
                   style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
                 />
@@ -273,7 +273,7 @@ export default function AuthScreen() {
                 <TextInput
                   value={signupWebsite}
                   onChangeText={setSignupWebsite}
-                  placeholder="https://happypawsrescue.org"
+                  placeholder="URL"
                   placeholderTextColor={theme.textSecondary}
                   style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
                   autoCapitalize="none"
@@ -286,7 +286,7 @@ export default function AuthScreen() {
             <TextInput
               value={signupUsername}
               onChangeText={setSignupUsername}
-              placeholder={signupRole === 'Shelter' ? 'happypaws_tx' : 'alex_adopts'}
+              placeholder={signupRole === 'Shelter' ? 'Username' : 'Username'}
               placeholderTextColor={theme.textSecondary}
               style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
               autoCapitalize="none"
@@ -296,7 +296,7 @@ export default function AuthScreen() {
             <TextInput
               value={signupEmail}
               onChangeText={setSignupEmail}
-              placeholder={signupRole === 'Shelter' ? 'info@happypawsrescue.org' : 'alex@example.com'}
+              placeholder="Email"
               placeholderTextColor={theme.textSecondary}
               style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
               autoCapitalize="none"
@@ -307,7 +307,7 @@ export default function AuthScreen() {
             <TextInput
               value={signupPassword}
               onChangeText={setSignupPassword}
-              placeholder="Create password"
+              placeholder="Password"
               placeholderTextColor={theme.textSecondary}
               secureTextEntry
               style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
@@ -343,6 +343,7 @@ export default function AuthScreen() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+		justifyContent: 'center'
   },
   scrollContent: {
     paddingHorizontal: Spacing.three,
@@ -350,8 +351,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    gap: Spacing.one,
-    paddingVertical: Spacing.two,
+		paddingTop: Spacing.seven,
   },
   headerEmoji: {
     fontSize: 42,

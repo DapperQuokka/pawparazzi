@@ -42,12 +42,12 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
         contentContainerStyle={styles.row}
         keyboardShouldPersistTaps="handled">
         {/* Species */}
-        {SPECIES_CATEGORIES.map(cat => (
+        {SPECIES_CATEGORIES.map(animal => (
           <FilterChip
-            key={cat.id}
-            label={`${cat.emoji} ${cat.label}`}
-            selected={filters.species === cat.id}
-            onPress={() => onChange({ ...filters, species: cat.id })}
+            key={animal.id}
+            label={`${animal.label}`}
+            selected={filters.species === animal.id}
+            onPress={() => onChange({ ...filters, species: animal.id })}
           />
         ))}
 

@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { getSpeciesEmoji } from '@/constants/species';
 import { BrandColors, Spacing } from '@/constants/theme';
 import { useAnimals } from '@/context/animal-context';
 import { getDisplayInitials } from '@/context/auth-context';
@@ -153,7 +152,6 @@ export default function AnimalProfileScreen() {
           {/* Stat chips */}
           <View style={styles.statRow}>
             <StatChip
-              emoji={getSpeciesEmoji(animal.species)}
               label={animal.species.charAt(0).toUpperCase() + animal.species.slice(1)}
               theme={theme}
             />

@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 
-import { SPECIES_CATEGORIES, getSpeciesEmoji, type Species } from '@/constants/species';
+import { type Species } from '@/constants/species';
 import { BrandColors, Spacing } from '@/constants/theme';
 import { useAnimals } from '@/context/animal-context';
 import { useAuth } from '@/context/auth-context';
@@ -166,7 +166,7 @@ export function AddAnimalModal({ visible, onClose }: AddAnimalModalProps) {
                       styles.chipText,
                       { color: species === sp ? '#fff' : theme.text },
                     ]}>
-                    {getSpeciesEmoji(sp)} {sp.charAt(0).toUpperCase() + sp.slice(1)}
+                    {sp.charAt(0).toUpperCase() + sp.slice(1)}
                   </Text>
                 </Pressable>
               ))}

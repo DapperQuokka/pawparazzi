@@ -75,7 +75,7 @@ export default function AnimalListingScreen() {
       <View style={[styles.header, { paddingTop: paddingTop + Spacing.two }]}>
         <View style={styles.headerTop}>
           <View>
-            <Text style={[styles.appTitle, { color: theme.text }]}>Pawparazzi 🐾</Text>
+            <Text style={[styles.appTitle, { color: theme.text }]}>Pawparazzi</Text>
             <View style={styles.locationRow}>
               <View style={[styles.locationDot, { backgroundColor: BrandColors.positive }]} />
               <Text style={[styles.locationText, { color: theme.textSecondary }]}>
@@ -111,7 +111,6 @@ export default function AnimalListingScreen() {
         </View>
       ) : filteredAnimals.length === 0 ? (
         <View style={styles.emptyState}>
-          <Text style={styles.emptyEmoji}>🐾</Text>
           <Text style={[styles.emptyTitle, { color: theme.text }]}>No pets found</Text>
           <Text style={[styles.emptySubtitle, { color: theme.textSecondary }]}>
             Try adjusting your search or filters
@@ -121,12 +120,11 @@ export default function AnimalListingScreen() {
         <FlatList
           data={filteredAnimals}
           keyExtractor={item => item.id}
-          numColumns={2}
+          numColumns={1}
           contentContainerStyle={[
             styles.listContent,
             { paddingBottom },
           ]}
-          columnWrapperStyle={styles.columnWrapper}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           refreshing={loading}
@@ -205,7 +203,8 @@ const styles = StyleSheet.create({
   },
   cardWrapper: {
     flex: 1,
-    maxWidth: '48.5%',
+    minWidth: '100%',
+		marginBottom: 20
   },
   loadingContainer: {
     flex: 1,

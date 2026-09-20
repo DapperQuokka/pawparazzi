@@ -21,12 +21,16 @@ export default function AppTabs() {
       labelStyle={{ selected: { color: colors.text } }}>
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>Adopt</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf="pawprint.fill" />
+        <NativeTabs.Trigger.Icon
+					src={{ default: scheme === 'light' ? require('@/assets/images/tabIcons/paw.png') : require('@/assets/images/tabIcons/paw-dark.png'), selected: require('@/assets/images/tabIcons/paw-selected.png')}}
+				/>
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="urgent">
         <NativeTabs.Trigger.Label>Urgent</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf="flame.fill" />
+				<NativeTabs.Trigger.Icon
+					src={{ default: scheme === 'light' ? require('@/assets/images/tabIcons/urgent.png') : require('@/assets/images/tabIcons/urgent-dark.png'), selected: require('@/assets/images/tabIcons/urgent-selected.png')}}
+				/>
       </NativeTabs.Trigger>
 
       {isShelter && (

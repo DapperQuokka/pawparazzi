@@ -157,7 +157,7 @@ export default function ProfileScreen() {
                         : BrandColors.accent,
                   },
                 ]}>
-                {user.role === 'Shelter' ? 'Shelter 🏠' : 'Adopter 🐾'}
+                {user.role === 'Shelter' ? 'Shelter' : 'Adopter'}
               </Text>
             </View>
           </View>
@@ -171,7 +171,6 @@ export default function ProfileScreen() {
         {/* ── Instagram Integration Stub ── */}
         <View style={[styles.sectionCard, { backgroundColor: theme.backgroundElement }]}>
           <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionIcon}>📸</Text>
             <Text style={[styles.sectionTitle, { color: theme.text }]}>Instagram Account</Text>
           </View>
           <Text style={[styles.instagramHandleText, { color: user.instagramHandle ? BrandColors.accent : theme.textSecondary }]}>
@@ -184,7 +183,7 @@ export default function ProfileScreen() {
                 styles.instagramLinkButton,
                 pressed && { opacity: 0.8 },
               ]}>
-              <Text style={styles.instagramLinkText}>🔗 Visit Instagram Profile</Text>
+              <Text style={styles.instagramLinkText}>Visit Instagram Profile</Text>
             </Pressable>
           ) : null}
         </View>
@@ -193,7 +192,6 @@ export default function ProfileScreen() {
         {user.role === 'Shelter' && (
           <View style={[styles.sectionCard, { backgroundColor: theme.backgroundElement }]}>
             <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionIcon}>🌐</Text>
               <Text style={[styles.sectionTitle, { color: theme.text }]}>External Website</Text>
             </View>
             <Text style={[styles.instagramHandleText, { color: BrandColors.accent }]}>
@@ -209,7 +207,7 @@ export default function ProfileScreen() {
                   { backgroundColor: BrandColors.accent },
                   pressed && { opacity: 0.8 },
                 ]}>
-                <Text style={styles.instagramLinkText}>🌐 Open Website</Text>
+                <Text style={styles.instagramLinkText}>Open Website</Text>
               </Pressable>
             ) : null}
           </View>
@@ -247,7 +245,7 @@ export default function ProfileScreen() {
               { backgroundColor: BrandColors.accent },
               pressed && { opacity: 0.85 },
             ]}>
-            <Text style={styles.actionButtonText}>✏️ Edit Profile</Text>
+            <Text style={styles.actionButtonText}>Edit Profile</Text>
           </Pressable>
 
           <Pressable
@@ -257,7 +255,7 @@ export default function ProfileScreen() {
               { backgroundColor: theme.backgroundElement },
               pressed && { opacity: 0.85 },
             ]}>
-            <Text style={[styles.actionButtonText, { color: '#EF4444' }]}>🚪 Log Out</Text>
+            <Text style={[styles.actionButtonText, { color: '#EF4444' }]}>Log Out</Text>
           </Pressable>
         </View>
 

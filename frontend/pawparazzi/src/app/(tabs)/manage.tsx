@@ -95,21 +95,17 @@ export default function ManageScreen() {
         </View>
 
         <View style={styles.statsRow}>
-          <StatCard emoji="🐾" value={String(shelterAnimals.length)} label="Total" theme={theme} />
-          <StatCard
-            emoji="🐕"
+          <StatCard 
             value={String(shelterAnimals.filter(a => a.species === 'dog').length)}
             label="Dogs"
             theme={theme}
           />
           <StatCard
-            emoji="🐈"
             value={String(shelterAnimals.filter(a => a.species === 'cat').length)}
             label="Cats"
             theme={theme}
           />
           <StatCard
-            emoji="🐇"
             value={String(shelterAnimals.filter(a => a.species !== 'dog' && a.species !== 'cat').length)}
             label="Other"
             theme={theme}
@@ -121,7 +117,6 @@ export default function ManageScreen() {
 
           {shelterAnimals.length === 0 ? (
             <View style={[styles.emptyCard, { backgroundColor: theme.backgroundElement }]}>
-              <Text style={styles.emptyEmoji}>🐾</Text>
               <Text style={[styles.emptyTitle, { color: theme.text }]}>No listings yet</Text>
               <Text style={[styles.emptySubtitle, { color: theme.textSecondary }]}>
                 Tap "+ Add" above to list your first animal for adoption.
@@ -171,12 +166,10 @@ export default function ManageScreen() {
   );
 }
 
-function StatCard({
-  emoji, value, label, theme,
-}: { emoji: string; value: string; label: string; theme: ReturnType<typeof useTheme> }) {
+function StatCard({ value, label, theme,
+}: { value: string; label: string; theme: ReturnType<typeof useTheme> }) {
   return (
     <View style={[styles.statCard, { backgroundColor: theme.backgroundElement }]}>
-      <Text style={styles.statEmoji}>{emoji}</Text>
       <Text style={[styles.statValue, { color: theme.text }]}>{value}</Text>
       <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{label}</Text>
     </View>
