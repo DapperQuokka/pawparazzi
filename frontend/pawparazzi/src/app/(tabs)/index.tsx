@@ -30,17 +30,40 @@ export default function AnimalListingScreen() {
 	}, [])
 
 	async function getAnimals() {
-
-		const { data, error } = await supabase.from('animals').select()
+		const { data, error } = await supabase.from('animals').select();
 
 		if (error) {
 			console.error(`Error: ${error.message}`);
-			return
+			return;
 		}
 
-		setAnimals(data ?? [])
+		const formattedData: Animal[] = (data ?? []).map((item: any) => {
+			let ageInMonths = item.age;
+			if (ageInMonths === undefined && item.dob) {
+				const dobDate = new Date(item.dob);
+				const now = new Date();
+				const diffMonths = (now.getFullYear() - dobDate.getFullYear()) * 12 + (now.getMonth() - dobDate.getMonth());
+				ageInMonths = Math.max(0, diffMonths);
+			}
 
-		console.log(data)
+			return {
+				id: item.id,
+				name: item.name ?? '',
+				species: item.species ?? 'Unknown',
+				breed: item.breed ?? 'Unknown',
+				age: ageInMonths ?? null,
+				gender: item.gender ?? 'unknown',
+				size: item.size ?? 'unknown',
+				distance: item.distance ?? null,
+				shelter: item.shelter ?? '',
+				shelterPhone: item.shelterPhone ?? '',
+				bio: item.bio ?? '',
+				tags: item.tags ?? [],
+				imageSource: item.image_url ? { uri: item.image_url } : (item.imageSource ?? require('@/assets/images/pawparazzi/kenzo.jpeg')),
+			};
+		});
+
+		setAnimals(formattedData);
 	}
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -57,7 +80,7 @@ export default function AnimalListingScreen() {
       if (filters.gender !== 'any' && animal.gender !== filters.gender) return false;
       return true;
     });
-  }, [searchQuery, filters]);
+  }, [animals, searchQuery, filters]);
 
   const handleCardPress = (animal: Animal) => {
     router.push(`/animal/${animal.id}` as any);

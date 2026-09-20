@@ -4,8 +4,8 @@ export type { Species, CategoryOption };
 export type { Shelter } from './shelters';
 export { SHELTERS, getShelterById, getShelterByName } from './shelters';
 
-export type Size = 'small' | 'medium' | 'large';
-export type Gender = 'male' | 'female';
+export type Size = 'small' | 'medium' | 'large' | 'unknown';
+export type Gender = 'male' | 'female' | 'unknown';
 
 export type Animal = {
   id: string;
@@ -154,7 +154,8 @@ export function getAnimalById(id: string): Animal | undefined {
 }
 
 /** Format age in months to a human-readable string. */
-export function formatAge(months: number): string {
+export function formatAge(months?: number): string {
+  if (months === undefined || months === null || isNaN(months)) return 'Unknown age';
   if (months < 12) return `${months}mo`;
   const years = Math.floor(months / 12);
   const rem = months % 12;
@@ -163,7 +164,8 @@ export function formatAge(months: number): string {
 }
 
 /** Format distance to a tidy label. */
-export function formatDistance(km: number): string {
+export function formatDistance(km?: number): string {
+  if (km === undefined || km === null || isNaN(km)) return 'Unknown km';
   return km < 1 ? `${Math.round(km * 1000)}m` : `${km.toFixed(1)} km`;
 }
 
