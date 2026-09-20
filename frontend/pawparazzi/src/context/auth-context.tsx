@@ -31,7 +31,7 @@ type AuthContextType = {
   login: (email: string, role?: UserRole) => void;
   signup: (profile: Omit<UserProfile, 'id'>) => void;
   logout: () => void;
-  updateProfile: (updates: Partial<UserProfile>) => void;
+  updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
 };
 
 /** Consolidates UserProfile object creation from a Supabase User instance */
@@ -185,8 +185,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signOut();
   };
 
-  const updateProfile = (updates: Partial<UserProfile>) => {
-    setUser(prev => (prev ? { ...prev, ...updates } : null));
+  const updateProfile = async (updates: Partial<UserProfile>) => {
+    const previousUser = user;
+    // Optimistic local update (ignoring immutable fields)
+    const { role: _r, username: _u, email: _e, ...allowedUpdates } = updates;
+    setUser(prev => (prev ? { ...prev, ...allowedUpdates } : null));
+
+    if (session?.user) {
+      try {
+        // Build metadata payload for allowed editable fields
+        const metadataUpdates: Record<string, any> = {};
+        if (allowedUpdates.name !== undefined) metadataUpdates.name = allowedUpdates.name;
+        if (allowedUpdates.instagramHandle !== undefined) metadataUpdates.instagramHandle = allowedUpdates.instagramHandle;
+        if (allowedUpdates.bio !== undefined) metadataUpdates.bio = allowedUpdates.bio;
+        if (allowedUpdates.address !== undefined) metadataUpdates.address = allowedUpdates.address;
+        if (allowedUpdates.websiteUrl !== undefined) metadataUpdates.websiteUrl = allowedUpdates.websiteUrl;
+
+        const updatePayload: { data?: Record<string, any> } = {};
+        if (Object.keys(metadataUpdates).length > 0) {
+          updatePayload.data = metadataUpdates;
+        }
+
+        // Only call Supabase if there's something to update
+        if (Object.keys(updatePayload).length > 0) {
+          const { data, error } = await supabase.auth.updateUser(updatePayload);
+
+          if (error) {
+            // Rollback optimistic update on failure
+            setUser(previousUser);
+            Alert.alert('Update Profile Error', error.message);
+            throw error;
+          }
+
+          if (data?.user) {
+            setUser(formatUserProfile(data.user));
+          }
+        }
+      } catch (err) {
+        // Rollback on any unexpected error
+        setUser(previousUser);
+        console.error('Error updating user profile in Supabase:', err);
+        throw err;
+      }
+    }
   };
 
   return (

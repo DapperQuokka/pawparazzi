@@ -2,7 +2,10 @@ import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
+  Keyboard,
+  KeyboardAvoidingView,
   Linking,
   Modal,
   Platform,
@@ -11,12 +14,14 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  type TextInputProps,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BrandColors, BottomTabInset, Spacing } from '@/constants/theme';
-import { useAuth, UserRole } from '@/context/auth-context';
+import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/hooks/use-theme';
 
 export default function ProfileScreen() {
@@ -25,57 +30,57 @@ export default function ProfileScreen() {
   const { user, isLoggedIn, logout, updateProfile } = useAuth();
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [editName, setEditName] = useState('');
-  const [editUsername, setEditUsername] = useState('');
-  const [editEmail, setEditEmail] = useState('');
   const [editInstagram, setEditInstagram] = useState('');
   const [editBio, setEditBio] = useState('');
-  const [editRole, setEditRole] = useState<UserRole>('Adopter');
   const [editAddress, setEditAddress] = useState('');
   const [editWebsite, setEditWebsite] = useState('');
 
-  const paddingTop = Platform.OS === 'ios' ? insets.top : insets.top + Spacing.two;
+  const paddingTop = insets.top + Spacing.two;
   const paddingBottom = insets.bottom + BottomTabInset + Spacing.four;
 
   const handleOpenEdit = () => {
     if (!user) return;
     setEditName(user.name);
-    setEditUsername(user.username);
-    setEditEmail(user.email);
     setEditInstagram(user.instagramHandle);
     setEditBio(user.bio || '');
-    setEditRole(user.role);
     setEditAddress(user.address || '');
     setEditWebsite(user.websiteUrl || '');
     setIsEditModalOpen(true);
   };
 
-  const handleSaveProfile = () => {
-    updateProfile({
-      name: editName.trim() || 'Anonymous User',
-      username: editUsername.trim().replace(/^@/, '') || 'user',
-      email: editEmail.trim(),
-      instagramHandle: editInstagram.trim().startsWith('@')
-        ? editInstagram.trim()
-        : `@${editInstagram.trim()}`,
-      bio: editBio.trim(),
-      role: editRole,
-      address: editRole === 'Shelter' ? editAddress.trim() : undefined,
-      websiteUrl: editRole === 'Shelter' ? editWebsite.trim() : undefined,
-    });
-    setIsEditModalOpen(false);
+  const handleSaveProfile = async () => {
+    if (!user) return;
+    setIsSaving(true);
+    try {
+      const cleanInstagram = editInstagram.trim()
+        ? editInstagram.trim().startsWith('@')
+          ? editInstagram.trim()
+          : `@${editInstagram.trim()}`
+        : '';
+
+      await updateProfile({
+        name: editName.trim() || 'Anonymous User',
+        instagramHandle: cleanInstagram,
+        bio: editBio.trim(),
+        address: user.role === 'Shelter' ? editAddress.trim() : undefined,
+        websiteUrl: user.role === 'Shelter' ? editWebsite.trim() : undefined,
+      });
+      setIsEditModalOpen(false);
+    } catch {
+      // Error alert handled in auth-context updateProfile
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleOpenInstagram = () => {
     if (!user?.instagramHandle) return;
     const cleanHandle = user.instagramHandle.replace('@', '').trim();
     const url = `https://instagram.com/${cleanHandle}`;
-    Linking.canOpenURL(url).then(supported => {
-      if (supported) {
-        Linking.openURL(url);
-      } else {
-        Alert.alert('Instagram Link', `Opening profile: ${url}`);
-      }
+    Linking.openURL(url).catch(() => {
+      Alert.alert('Unable to open link', `Could not open ${url}`);
     });
   };
 
@@ -110,7 +115,6 @@ export default function ProfileScreen() {
         
         {/* ── Profile Header ── */}
         <View style={[styles.headerCard, { backgroundColor: theme.backgroundElement }]}>
-          {/* Avatar Photo Placeholder */}
           <View style={styles.avatarWrapper}>
             <Image
               source={user.avatarUrl || require('@/assets/images/pawparazzi/kenzo.jpeg')}
@@ -124,7 +128,7 @@ export default function ProfileScreen() {
             @{user.username}
           </Text>
 
-          {/* Role Badge Pill — without "Role:" prefix */}
+          {/* Role Badge Pill */}
           <View style={styles.roleRow}>
             <View
               style={[
@@ -151,7 +155,7 @@ export default function ProfileScreen() {
             </View>
           </View>
 
-          {/* Editable Bio / Description under Role Pill */}
+          {/* Editable Bio / Description */}
           <Text style={[styles.bioText, { color: theme.textSecondary }]}>
             {user.bio || 'No description provided yet. Tap Edit Profile to add a bio!'}
           </Text>
@@ -253,125 +257,190 @@ export default function ProfileScreen() {
       </ScrollView>
 
       {/* ── Edit Profile Modal ── */}
-      <Modal visible={isEditModalOpen} animationType="slide" transparent>
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalCard, { backgroundColor: theme.background }]}>
-            <Text style={[styles.modalTitle, { color: theme.text }]}>Edit Profile</Text>
+      <Modal
+        visible={isEditModalOpen}
+        animationType="slide"
+        presentationStyle={Platform.OS === 'ios' ? 'pageSheet' : 'overFullScreen'}
+        transparent={Platform.OS !== 'ios'}
+        onRequestClose={() => setIsEditModalOpen(false)}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            style={[styles.modalBackdrop, { backgroundColor: Platform.OS === 'ios' ? theme.background : 'rgba(0,0,0,0.5)' }]}>
+            <View style={[styles.modalSheet, { backgroundColor: theme.background }]}>
+              {/* Pull-down grabber bar for iOS pageSheet swipe gesture */}
+              {Platform.OS === 'ios' && (
+                <View style={styles.pullDownContainer}>
+                  <View style={[styles.pullDownBar, { backgroundColor: theme.textSecondary }]} />
+                </View>
+              )}
 
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
-              {editRole === 'Shelter' ? 'Shelter Name' : 'Full Name'}
-            </Text>
-            <TextInput
-              value={editName}
-              onChangeText={setEditName}
-              style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text }]}
-            />
+              <Text style={[styles.modalTitle, { color: theme.text }]}>Edit Profile</Text>
 
-            {editRole === 'Shelter' && (
-              <>
-                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
-                  Shelter Address
-                </Text>
-                <TextInput
-                  value={editAddress}
-                  onChangeText={setEditAddress}
-                  placeholder="123 Rescue Way, Austin, TX"
-                  placeholderTextColor={theme.textSecondary}
-                  style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text }]}
+              <ScrollView
+                style={styles.modalScroll}
+                contentContainerStyle={styles.modalScrollContent}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled">
+                
+                <FormField
+                  label={user.role === 'Shelter' ? 'Shelter Name' : 'Full Name'}
+                  value={editName}
+                  onChangeText={setEditName}
+                  theme={theme}
                 />
 
-                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
-                  External Website URL
-                </Text>
-                <TextInput
-                  value={editWebsite}
-                  onChangeText={setEditWebsite}
-                  placeholder="https://happypawsrescue.org"
-                  placeholderTextColor={theme.textSecondary}
-                  style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text }]}
+                {user.role === 'Shelter' && (
+                  <>
+                    <FormField
+                      label="Shelter Address"
+                      value={editAddress}
+                      onChangeText={setEditAddress}
+                      placeholder="123 Rescue Way, Austin, TX"
+                      theme={theme}
+                    />
+
+                    <FormField
+                      label="External Website URL"
+                      value={editWebsite}
+                      onChangeText={setEditWebsite}
+                      placeholder="https://happypawsrescue.org"
+                      keyboardType="url"
+                      autoCapitalize="none"
+                      theme={theme}
+                    />
+                  </>
+                )}
+
+                <FormField
+                  label="Username"
+                  value={`@${user.username}`}
+                  editable={false}
+                  helperText="Cannot be changed"
+                  theme={theme}
+                />
+
+                <FormField
+                  label="Email Address"
+                  value={user.email}
+                  editable={false}
+                  helperText="Cannot be changed"
+                  theme={theme}
+                />
+
+                <FormField
+                  label="Account Role"
+                  value={user.role === 'Shelter' ? 'Shelter 🏠' : 'Adopter 🐾'}
+                  editable={false}
+                  helperText="Cannot be changed"
+                  theme={theme}
+                />
+
+                <FormField
+                  label="Instagram Handle"
+                  value={editInstagram}
+                  onChangeText={setEditInstagram}
+                  placeholder="@username"
                   autoCapitalize="none"
-                  keyboardType="url"
+                  theme={theme}
                 />
-              </>
-            )}
 
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Username</Text>
-            <TextInput
-              value={editUsername}
-              onChangeText={setEditUsername}
-              style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text }]}
-              autoCapitalize="none"
-            />
+                <FormField
+                  label="Bio / Description"
+                  value={editBio}
+                  onChangeText={setEditBio}
+                  placeholder="Tell us about yourself or your shelter..."
+                  multiline
+                  numberOfLines={3}
+                  style={styles.textArea}
+                  returnKeyType="default"
+                  submitBehavior="blurAndSubmit"
+                  theme={theme}
+                />
 
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Email Address</Text>
-            <TextInput
-              value={editEmail}
-              onChangeText={setEditEmail}
-              keyboardType="email-address"
-              style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text }]}
-              autoCapitalize="none"
-            />
+                {/* Modal Action Buttons inside ScrollView for smooth keyboard clearance */}
+                <View style={styles.modalButtonsRow}>
+                  <Pressable
+                    onPress={() => setIsEditModalOpen(false)}
+                    disabled={isSaving}
+                    style={[styles.modalButton, { backgroundColor: theme.backgroundElement }]}>
+                    <Text style={[styles.modalButtonText, { color: theme.text }]}>Cancel</Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={handleSaveProfile}
+                    disabled={isSaving}
+                    style={[styles.modalButton, { backgroundColor: BrandColors.accent }]}>
+                    {isSaving ? (
+                      <ActivityIndicator color="#fff" size="small" />
+                    ) : (
+                      <Text style={[styles.modalButtonText, { color: '#fff' }]}>Save Changes</Text>
+                    )}
+                  </Pressable>
+                </View>
 
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Instagram Handle</Text>
-            <TextInput
-              value={editInstagram}
-              onChangeText={setEditInstagram}
-              placeholder="@username"
-              placeholderTextColor={theme.textSecondary}
-              style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text }]}
-              autoCapitalize="none"
-            />
-
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Bio / Description</Text>
-            <TextInput
-              value={editBio}
-              onChangeText={setEditBio}
-              placeholder="Tell us about yourself or your shelter..."
-              placeholderTextColor={theme.textSecondary}
-              multiline
-              numberOfLines={3}
-              style={[
-                styles.input,
-                styles.textArea,
-                { backgroundColor: theme.backgroundElement, color: theme.text },
-              ]}
-            />
-
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Account Role</Text>
-            <View style={styles.rolePickerRow}>
-              {(['Adopter', 'Shelter'] as UserRole[]).map(role => (
-                <Pressable
-                  key={role}
-                  onPress={() => setEditRole(role)}
-                  style={[
-                    styles.roleChip,
-                    {
-                      backgroundColor:
-                        editRole === role ? BrandColors.accent : theme.backgroundElement,
-                    },
-                  ]}>
-                  <Text style={[styles.roleChipText, { color: editRole === role ? '#fff' : theme.text }]}>
-                    {role === 'Shelter' ? 'Shelter 🏠' : 'Adopter 🐾'}
-                  </Text>
-                </Pressable>
-              ))}
+                <View style={{ height: Spacing.four }} />
+              </ScrollView>
             </View>
-
-            <View style={styles.modalButtonsRow}>
-              <Pressable
-                onPress={() => setIsEditModalOpen(false)}
-                style={[styles.modalButton, { backgroundColor: theme.backgroundElement }]}>
-                <Text style={[styles.modalButtonText, { color: theme.text }]}>Cancel</Text>
-              </Pressable>
-              <Pressable
-                onPress={handleSaveProfile}
-                style={[styles.modalButton, { backgroundColor: BrandColors.accent }]}>
-                <Text style={[styles.modalButtonText, { color: '#fff' }]}>Save Changes</Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
+          </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
       </Modal>
+    </View>
+  );
+}
+
+function FormField({
+  label,
+  value,
+  onChangeText,
+  theme,
+  placeholder,
+  multiline,
+  numberOfLines,
+  keyboardType,
+  autoCapitalize,
+  style,
+  returnKeyType = 'next',
+  submitBehavior = 'submit',
+  editable = true,
+  helperText,
+}: {
+  label: string;
+  value: string;
+  onChangeText?: (text: string) => void;
+  theme: ReturnType<typeof useTheme>;
+  editable?: boolean;
+  helperText?: string;
+} & Partial<TextInputProps>) {
+  return (
+    <View style={styles.formFieldContainer}>
+      <View style={styles.formFieldHeader}>
+        <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>{label}</Text>
+        {helperText ? (
+          <Text style={[styles.inputHelperText, { color: theme.textSecondary }]}>{helperText}</Text>
+        ) : null}
+      </View>
+      <TextInput
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor={theme.textSecondary}
+        multiline={multiline}
+        numberOfLines={numberOfLines}
+        keyboardType={keyboardType}
+        autoCapitalize={autoCapitalize}
+        returnKeyType={returnKeyType}
+        submitBehavior={submitBehavior}
+        editable={editable}
+        style={[
+          styles.input,
+          {
+            backgroundColor: theme.backgroundElement,
+            color: editable ? theme.text : theme.textSecondary,
+            opacity: editable ? 1 : 0.65,
+          },
+          style,
+        ]}
+      />
     </View>
   );
 }
@@ -550,21 +619,56 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     fontSize: 15,
   },
-  modalOverlay: {
+  modalBackdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.three,
+    justifyContent: Platform.OS === 'ios' ? 'flex-start' : 'center',
+    paddingHorizontal: Platform.OS === 'ios' ? 0 : Spacing.three,
+    paddingVertical: Platform.OS === 'ios' ? 0 : Spacing.four,
   },
-  modalCard: {
-    borderRadius: 20,
-    padding: Spacing.four,
+  modalSheet: {
+    flex: Platform.OS === 'ios' ? 1 : undefined,
+    maxHeight: Platform.OS === 'ios' ? undefined : '90%',
+    borderRadius: Platform.OS === 'ios' ? 0 : 20,
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.two,
+    paddingBottom: Spacing.four,
     gap: Spacing.two,
+  },
+  pullDownContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing.one,
+  },
+  pullDownBar: {
+    width: 40,
+    height: 5,
+    borderRadius: 3,
+    opacity: 0.4,
+  },
+  modalScroll: {
+    flex: 1,
+  },
+  modalScrollContent: {
+    gap: Spacing.two,
+    paddingBottom: Spacing.two,
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: '800',
     marginBottom: Spacing.one,
+  },
+  formFieldContainer: {
+    gap: Spacing.one,
+  },
+  formFieldHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  inputHelperText: {
+    fontSize: 11,
+    fontWeight: '500',
+    fontStyle: 'italic',
   },
   inputLabel: {
     fontSize: 12,
@@ -582,20 +686,6 @@ const styles = StyleSheet.create({
     height: 72,
     textAlignVertical: 'top',
   },
-  rolePickerRow: {
-    flexDirection: 'row',
-    gap: Spacing.two,
-  },
-  roleChip: {
-    flex: 1,
-    paddingVertical: 10,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  roleChipText: {
-    fontWeight: '700',
-    fontSize: 14,
-  },
   modalButtonsRow: {
     flexDirection: 'row',
     gap: Spacing.two,
@@ -612,3 +702,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
+
