@@ -1,5 +1,4 @@
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
 import { useState } from 'react';
 import {
   ActivityIndicator,
@@ -24,6 +23,8 @@ import { BrandColors, BottomTabInset, Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/hooks/use-theme';
 
+import AuthScreen from './auth';
+
 export default function ProfileScreen() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -39,6 +40,10 @@ export default function ProfileScreen() {
 
   const paddingTop = insets.top + Spacing.two;
   const paddingBottom = insets.bottom + BottomTabInset + Spacing.four;
+
+  const handleLogout = () => {
+    logout();
+  };
 
   const handleOpenEdit = () => {
     if (!user) return;
@@ -85,23 +90,7 @@ export default function ProfileScreen() {
   };
 
   if (!isLoggedIn || !user) {
-    return (
-      <View style={[styles.loggedOutContainer, { backgroundColor: theme.background }]}>
-        <Text style={styles.loggedOutEmoji}>👤</Text>
-        <Text style={[styles.loggedOutTitle, { color: theme.text }]}>Not Logged In</Text>
-        <Text style={[styles.loggedOutSubtitle, { color: theme.textSecondary }]}>
-          Sign in or create an account to manage your profile and adoptions.
-        </Text>
-        <Pressable
-          style={({ pressed }) => [
-            styles.authButton,
-            { backgroundColor: pressed ? BrandColors.accentDark : BrandColors.accent },
-          ]}
-          onPress={() => router.push('/auth' as any)}>
-          <Text style={styles.authButtonText}>Go to Log In / Sign Up</Text>
-        </Pressable>
-      </View>
-    );
+    return <AuthScreen />;
   }
 
   return (
@@ -244,7 +233,7 @@ export default function ProfileScreen() {
           </Pressable>
 
           <Pressable
-            onPress={logout}
+            onPress={handleLogout}
             style={({ pressed }) => [
               styles.actionButton,
               { backgroundColor: theme.backgroundElement },
@@ -587,36 +576,6 @@ const styles = StyleSheet.create({
   actionButtonText: {
     color: '#fff',
     fontWeight: '700',
-    fontSize: 15,
-  },
-  loggedOutContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.two,
-  },
-  loggedOutEmoji: {
-    fontSize: 56,
-  },
-  loggedOutTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-  },
-  loggedOutSubtitle: {
-    fontSize: 14,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-  authButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-    borderRadius: 14,
-    marginTop: Spacing.two,
-  },
-  authButtonText: {
-    color: '#fff',
-    fontWeight: '800',
     fontSize: 15,
   },
   modalBackdrop: {

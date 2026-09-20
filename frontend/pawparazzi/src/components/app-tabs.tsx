@@ -36,17 +36,10 @@ export default function AppTabs() {
         </NativeTabs.Trigger>
       )}
 
-      {isLoggedIn ? (
-        <NativeTabs.Trigger name="profile">
-          <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
-          <NativeTabs.Trigger.Icon sf="person.crop.circle.fill" />
-        </NativeTabs.Trigger>
-      ) : (
-        <NativeTabs.Trigger name="auth">
-          <NativeTabs.Trigger.Label>Log In</NativeTabs.Trigger.Label>
-          <NativeTabs.Trigger.Icon sf="person.badge.key.fill" />
-        </NativeTabs.Trigger>
-      )}
+      <NativeTabs.Trigger name="profile">
+        <NativeTabs.Trigger.Label>{isLoggedIn ? 'Profile' : 'Log In'}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf={isLoggedIn ? 'person.crop.circle.fill' : 'person.badge.key.fill'} />
+      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }
