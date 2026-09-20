@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { FlatList, Platform, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Platform, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnimalCard } from '@/components/animal-card';
@@ -23,21 +23,27 @@ export default function AnimalListingScreen() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 	const [animals, setAnimals] = useState<Animal[]>([]);
+	const [loading, setLoading] = useState<boolean>(true);
 
 	useEffect (() => {
 		getAnimals()
 	}, [])
 
 	async function getAnimals() {
-		const { data, error } = await supabase.from('animals').select();
+		setLoading(true);
+		try {
+			const { data, error } = await supabase.from('animals').select();
 
-		if (error) {
-			console.error(`Error: ${error.message}`);
-			return;
+			if (error) {
+				console.error(`Error: ${error.message}`);
+				return;
+			}
+
+			const formattedData: Animal[] = (data ?? []).map(formatAnimal);
+			setAnimals(formattedData);
+		} finally {
+			setLoading(false);
 		}
-
-		const formattedData: Animal[] = (data ?? []).map(formatAnimal);
-		setAnimals(formattedData);
 	}
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -98,8 +104,12 @@ export default function AnimalListingScreen() {
         <View style={[styles.separator, { backgroundColor: theme.backgroundElement }]} />
       </View>
 
-      {/* ── Animal Grid ── */}
-      {filteredAnimals.length === 0 ? (
+      {/* ── Animal Grid / Loading / Empty State ── */}
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={BrandColors.accent} />
+        </View>
+      ) : filteredAnimals.length === 0 ? (
         <View style={styles.emptyState}>
           <Text style={styles.emptyEmoji}>🐾</Text>
           <Text style={[styles.emptyTitle, { color: theme.text }]}>No pets found</Text>
@@ -119,6 +129,8 @@ export default function AnimalListingScreen() {
           columnWrapperStyle={styles.columnWrapper}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
+          refreshing={loading}
+          onRefresh={getAnimals}
           renderItem={({ item }) => (
             <View style={styles.cardWrapper}>
               <AnimalCard animal={item} onPress={() => handleCardPress(item)} />
@@ -194,6 +206,12 @@ const styles = StyleSheet.create({
   cardWrapper: {
     flex: 1,
     maxWidth: '48.5%',
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingBottom: BottomTabInset,
   },
   emptyState: {
     flex: 1,
