@@ -1,8 +1,8 @@
+import type { Session, User } from '@supabase/supabase-js';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
-import { Session, User } from '@supabase/supabase-js';
 
-import { supabase } from '../../lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 export type UserRole = 'Adopter' | 'Shelter';
 

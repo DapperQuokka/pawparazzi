@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Linking,
@@ -16,11 +16,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getSpeciesEmoji } from '@/constants/species';
 import { BrandColors, Spacing } from '@/constants/theme';
 import { useAnimals } from '@/context/animal-context';
-import type { Animal } from '@/data/animals';
-import { formatAge, formatAnimal, formatDistance, getAnimalById, getShelterByName } from '@/data/animals';
+import {
+  formatAge,
+  formatAnimal,
+  formatDistance,
+  getAnimalById,
+  getShelterByName,
+  type Animal,
+} from '@/data/animals';
 import { useTheme } from '@/hooks/use-theme';
-
-import { supabase } from '../../../lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 const SIZE_LABEL: Record<string, string> = {
   small: 'Small',

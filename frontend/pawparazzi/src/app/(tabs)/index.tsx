@@ -1,18 +1,16 @@
 import { router } from 'expo-router';
-import { useMemo, useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FlatList, Platform, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnimalCard } from '@/components/animal-card';
 import { FilterBar, type FilterState } from '@/components/filter-bar';
 import { SearchBar } from '@/components/search-bar';
-import { BrandColors, BottomTabInset, Spacing } from '@/constants/theme';
+import { BottomTabInset, BrandColors, Spacing } from '@/constants/theme';
 import { useAnimals } from '@/context/animal-context';
-import type { Animal } from '@/data/animals';
-import { formatAnimal } from '@/data/animals';
+import { formatAnimal, type Animal } from '@/data/animals';
 import { useTheme } from '@/hooks/use-theme';
-
-import { supabase } from '../../../lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 
 const DEFAULT_FILTERS: FilterState = {
