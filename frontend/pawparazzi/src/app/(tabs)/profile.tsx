@@ -20,7 +20,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BrandColors, BottomTabInset, Spacing } from '@/constants/theme';
-import { useAuth } from '@/context/auth-context';
+import { getDisplayInitials, useAuth } from '@/context/auth-context';
 import { useTheme } from '@/hooks/use-theme';
 
 import AuthScreen from './auth';
@@ -93,6 +93,10 @@ export default function ProfileScreen() {
     return <AuthScreen />;
   }
 
+  const isShelter = user.role === 'Shelter';
+  const roleColor = isShelter ? '#2563EB' : BrandColors.accent;
+  const roleBg = isShelter ? 'rgba(59, 130, 246, 0.15)' : BrandColors.accentMuted;
+
   return (
     <View style={[styles.root, { backgroundColor: theme.background }]}>
       <ScrollView
@@ -104,12 +108,26 @@ export default function ProfileScreen() {
         
         {/* ── Profile Header ── */}
         <View style={[styles.headerCard, { backgroundColor: theme.backgroundElement }]}>
-          <View style={styles.avatarWrapper}>
-            <Image
-              source={user.avatarUrl || require('@/assets/images/pawparazzi/kenzo.jpeg')}
-              style={styles.avatarImage}
-              contentFit="cover"
-            />
+          {/* Avatar Photo or Initials */}
+          <View
+            style={[
+              styles.avatarWrapper,
+              {
+                backgroundColor: roleBg,
+                borderColor: roleColor,
+              },
+            ]}>
+            {user.avatarUrl ? (
+              <Image
+                source={user.avatarUrl}
+                style={styles.avatarImage}
+                contentFit="cover"
+              />
+            ) : (
+              <Text style={[styles.avatarInitials, { color: roleColor }]}>
+                {getDisplayInitials(user.name, isShelter)}
+              </Text>
+            )}
           </View>
 
           <Text style={[styles.name, { color: theme.text }]}>{user.name}</Text>
@@ -478,7 +496,13 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginBottom: Spacing.one,
     borderWidth: 3,
-    borderColor: BrandColors.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarInitials: {
+    fontSize: 28,
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
   avatarImage: {
     width: '100%',

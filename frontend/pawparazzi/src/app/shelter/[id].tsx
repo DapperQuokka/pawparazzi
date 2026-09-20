@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AnimalCard } from '@/components/animal-card';
 import { BrandColors, Spacing } from '@/constants/theme';
 import { useAnimals } from '@/context/animal-context';
+import { getDisplayInitials } from '@/context/auth-context';
 import { getShelterById, getShelterByName } from '@/data/animals';
 import { useTheme } from '@/hooks/use-theme';
 
@@ -62,13 +63,15 @@ export default function ShelterProfileScreen() {
         bounces>
 
         {/* Hero Banner */}
-        <View style={styles.heroWrapper}>
-          <Image
-            source={shelter.imageSource}
-            style={styles.heroImage}
-            contentFit="cover"
-            transition={300}
-          />
+          <View style={[styles.heroWrapper, !shelter.imageSource && { backgroundColor: theme.backgroundElement }]}>
+          {shelter.imageSource && (
+            <Image
+              source={shelter.imageSource}
+              style={styles.heroImage}
+              contentFit="cover"
+              transition={300}
+            />
+          )}
           <View style={styles.heroScrim} />
 
           {/* Back button */}
@@ -91,7 +94,9 @@ export default function ShelterProfileScreen() {
                 <Text style={styles.shelterBadgeText}>Verified Shelter 🏠</Text>
               </View>
             </View>
-            <Text style={styles.heroName}>{shelter.name}</Text>
+            <Text style={[styles.heroName, !shelter.imageSource && { color: theme.text, textShadowColor: 'transparent' }]}>
+              {shelter.name}
+            </Text>
           </View>
         </View>
 

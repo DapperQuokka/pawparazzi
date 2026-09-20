@@ -7,7 +7,7 @@ export type Shelter = {
   bio: string;
   hours: string;
   website: string;
-  imageSource: any;
+  imageSource?: any;
 };
 
 export const SHELTERS: Shelter[] = [
@@ -20,7 +20,6 @@ export const SHELTERS: Shelter[] = [
     bio: 'Happy Paws Rescue is a non-profit dedicated to rescuing, rehabilitating, and rehoming dogs and cats in need. We operate a zero-kill sanctuary powered by passionate staff and volunteers.',
     hours: 'Mon-Sat: 10 AM - 6 PM | Sun: Closed',
     website: 'https://happypawsrescue.org',
-    imageSource: require('@/assets/images/pawparazzi/kenzo.jpeg'),
   },
   {
     id: 'city-animal',
@@ -31,7 +30,6 @@ export const SHELTERS: Shelter[] = [
     bio: 'City Animal Shelter provides care and temporary housing to thousands of lost and abandoned animals each year. We offer adoption, spay/neuter programs, and pet resources.',
     hours: 'Mon-Sun: 9 AM - 5 PM',
     website: 'https://cityanimalshelter.gov',
-    imageSource: require('@/assets/images/pawparazzi/kenzo.jpeg'),
   },
   {
     id: 'sunshine-animal',
@@ -42,7 +40,6 @@ export const SHELTERS: Shelter[] = [
     bio: 'Sunshine Animal Haven specializes in caring for active dogs and cats, giving them high quality medical care, training, and socialization before finding their perfect home.',
     hours: 'Tue-Sun: 11 AM - 7 PM | Mon: Closed',
     website: 'https://sunshinehaven.org',
-    imageSource: require('@/assets/images/pawparazzi/kenzo.jpeg'),
   },
   {
     id: 'small-paws',
@@ -53,7 +50,6 @@ export const SHELTERS: Shelter[] = [
     bio: 'Small Paws Rescue focuses on small animals like rabbits, guinea pigs, hamsters, and small pets. We provide education on small animal care and foster-to-adopt options.',
     hours: 'Wed-Sun: 12 PM - 5 PM',
     website: 'https://smallpawsrescue.org',
-    imageSource: require('@/assets/images/pawparazzi/kenzo.jpeg'),
   },
   {
     id: 'urban-cat',
@@ -64,7 +60,6 @@ export const SHELTERS: Shelter[] = [
     bio: 'Urban Cat Coalition is a feline-only sanctuary helping street cats and surrendered felines find peaceful, loving homes. We specialize in socialization and senior cat care.',
     hours: 'Tue-Sat: 10 AM - 6 PM',
     website: 'https://urbancatcoalition.org',
-    imageSource: require('@/assets/images/pawparazzi/kenzo.jpeg'),
   },
   {
     id: 'feathered-friends',
@@ -75,7 +70,6 @@ export const SHELTERS: Shelter[] = [
     bio: 'Feathered Friends Sanctuary provides rehabilitation and rehoming services for parrots, cockatiels, and rescue birds of all species across the region.',
     hours: 'Thu-Sun: 10 AM - 4 PM',
     website: 'https://featheredfriends.org',
-    imageSource: require('@/assets/images/pawparazzi/kenzo.jpeg'),
   },
 ];
 
@@ -95,6 +89,5 @@ export function getShelterByName(name: string): Shelter {
     bio: `${name} is dedicated to animal care and welfare in the community.`,
     hours: 'Mon-Sat: 9 AM - 5 PM',
     website: 'https://example.org',
-    imageSource: require('@/assets/images/pawparazzi/kenzo.jpeg'),
   };
 }

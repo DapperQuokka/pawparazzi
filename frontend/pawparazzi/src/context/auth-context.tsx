@@ -34,6 +34,24 @@ type AuthContextType = {
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
 };
 
+/**
+ * Generates uppercase initials for display purposes.
+ * - For shelters/organizations: returns the first letter (e.g., "Happy Paws Rescue" -> "H").
+ * - For users/individuals: returns up to 2 letters (e.g., "Alex Morgan" -> "AM").
+ */
+export function getDisplayInitials(name?: string, isShelter: boolean = false): string {
+  if (!name || !name.trim()) return '';
+  const clean = name.trim();
+  if (isShelter) {
+    return clean.charAt(0).toUpperCase();
+  }
+  const words = clean.split(/\s+/).filter(Boolean);
+  if (words.length >= 2) {
+    return `${words[0][0]}${words[1][0]}`.toUpperCase();
+  }
+  return clean.slice(0, 2).toUpperCase();
+}
+
 /** Consolidates UserProfile object creation from a Supabase User instance */
 export function formatUserProfile(authUser: User): UserProfile {
   const meta = authUser.user_metadata || {};
@@ -47,7 +65,7 @@ export function formatUserProfile(authUser: User): UserProfile {
     bio: meta.bio || '',
     address: meta.address,
     websiteUrl: meta.websiteUrl,
-    avatarUrl: require('@/assets/images/pawparazzi/kenzo.jpeg'),
+    avatarUrl: meta.avatarUrl,
   };
 }
 
@@ -59,7 +77,6 @@ const DEFAULT_USER: UserProfile = {
   role: 'Adopter',
   instagramHandle: '@alex_pawprints',
   bio: 'Animal lover searching for a rescue dog to join our family! 🐕',
-  avatarUrl: require('@/assets/images/pawparazzi/kenzo.jpeg'),
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -169,14 +186,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           : 'Passionate pet adopter.',
       address: role === 'Shelter' ? '123 Rescue Way, Austin, TX 78701' : undefined,
       websiteUrl: role === 'Shelter' ? 'https://happypawsrescue.org' : undefined,
-      avatarUrl: require('@/assets/images/pawparazzi/kenzo.jpeg'),
     });
   };
 
   const signup = (profile: Omit<UserProfile, 'id'>) => {
     setUser({
       ...profile,
-      avatarUrl: profile.avatarUrl || require('@/assets/images/pawparazzi/kenzo.jpeg'),
+      avatarUrl: profile.avatarUrl,
       id: 'usr_' + Date.now(),
     });
   };

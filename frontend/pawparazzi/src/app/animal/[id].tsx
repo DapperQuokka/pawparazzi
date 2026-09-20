@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getSpeciesEmoji } from '@/constants/species';
 import { BrandColors, Spacing } from '@/constants/theme';
 import { useAnimals } from '@/context/animal-context';
+import { getDisplayInitials } from '@/context/auth-context';
 import {
   formatAge,
   formatAnimal,
@@ -181,8 +182,10 @@ export default function AnimalProfileScreen() {
               { backgroundColor: theme.backgroundElement, borderRadius: 14 },
               pressed && { opacity: 0.8 },
             ]}>
-            <View style={[styles.shelterIcon, { backgroundColor: BrandColors.accentMuted }]}>
-              <Text style={styles.shelterIconText}>🏠</Text>
+            <View style={[styles.shelterIcon, { backgroundColor: 'rgba(59, 130, 246, 0.15)', borderWidth: 1, borderColor: '#2563EB' }]}>
+              <Text style={[styles.shelterIconText, { color: '#2563EB', fontSize: 13, fontWeight: '800' }]}>
+                {getDisplayInitials(animal.shelter, true)}
+              </Text>
             </View>
             <View style={styles.shelterInfo}>
               <Text style={[styles.shelterLabel, { color: theme.textSecondary }]}>Shelter</Text>
