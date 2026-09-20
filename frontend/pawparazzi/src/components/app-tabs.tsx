@@ -11,7 +11,7 @@ import { useAuth } from '@/context/auth-context';
 export default function AppTabs() {
   const scheme = useColorScheme();
   const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];
-  const { user } = useAuth();
+  const { user, isLoggedIn } = useAuth();
   const isShelter = user?.role === 'Shelter';
 
   return (
@@ -45,21 +45,23 @@ export default function AppTabs() {
         </NativeTabs.Trigger>
       )}
 
-      <NativeTabs.Trigger name="profile">
-        <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/home.png')}
-          renderingMode="template"
-        />
-      </NativeTabs.Trigger>
-
-      <NativeTabs.Trigger name="auth">
-        <NativeTabs.Trigger.Label>Log In</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/explore.png')}
-          renderingMode="template"
-        />
-      </NativeTabs.Trigger>
+      {isLoggedIn ? (
+        <NativeTabs.Trigger name="profile">
+          <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Icon
+            src={require('@/assets/images/tabIcons/home.png')}
+            renderingMode="template"
+          />
+        </NativeTabs.Trigger>
+      ) : (
+        <NativeTabs.Trigger name="auth">
+          <NativeTabs.Trigger.Label>Log In</NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Icon
+            src={require('@/assets/images/tabIcons/explore.png')}
+            renderingMode="template"
+          />
+        </NativeTabs.Trigger>
+      )}
     </NativeTabs>
   );
 }
