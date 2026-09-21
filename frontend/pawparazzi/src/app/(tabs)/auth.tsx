@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BrandColors, BottomTabInset, Spacing } from '@/constants/theme';
+import { BrandColors, BottomTabInset, Spacing, MaxContentWidth } from '@/constants/theme';
 import { useAuth, UserRole } from '@/context/auth-context';
 import { useTheme } from '@/hooks/use-theme';
 
@@ -129,216 +129,219 @@ export default function AuthScreen() {
               : 'Sign in to contact shelters and adopt pets'}
           </Text>
         </View>
-				<ScrollView
-					contentContainerStyle={[
-						styles.scrollContent,
-						{ paddingTop: Spacing.four, paddingBottom },
-					]}
-					showsVerticalScrollIndicator={false}
-					keyboardShouldPersistTaps="handled">
 
-        {/* Mode Switch Segment */}
-        <View style={[styles.segmentContainer, { backgroundColor: theme.backgroundElement }]}>
-          <Pressable
-            onPress={() => setMode('login')}
-            style={[
-              styles.segmentButton,
-              mode === 'login' && { backgroundColor: theme.background, shadowOpacity: 0.1 },
-            ]}>
-            <Text style={[styles.segmentText, { color: mode === 'login' ? theme.text : theme.textSecondary }]}>
-              Log In
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => setMode('signup')}
-            style={[
-              styles.segmentButton,
-              mode === 'signup' && { backgroundColor: theme.background, shadowOpacity: 0.1 },
-            ]}>
-            <Text style={[styles.segmentText, { color: mode === 'signup' ? theme.text : theme.textSecondary }]}>
-              Sign Up
-            </Text>
-          </Pressable>
-        </View>
+        <View style={styles.innerContainer}>
+          <ScrollView
+            contentContainerStyle={[
+              styles.scrollContent,
+              { paddingTop: Spacing.four, paddingBottom },
+            ]}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled">
 
-        {/* ── Log In Form ── */}
-        {mode === 'login' ? (
-          <View style={[styles.formCard, { backgroundColor: theme.backgroundElement }]}>
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Email Address</Text>
-            <TextInput
-              value={loginEmail}
-              onChangeText={setLoginEmail}
-              placeholder="Email"
-              placeholderTextColor={theme.textSecondary}
-              style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
-              autoCapitalize="none"
-              keyboardType="email-address"
-            />
-
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Password</Text>
-            <TextInput
-              value={loginPassword}
-              onChangeText={setLoginPassword}
-              placeholder="Password"
-              placeholderTextColor={theme.textSecondary}
-              secureTextEntry
-              style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
-            />
-
+          {/* Mode Switch Segment */}
+          <View style={[styles.segmentContainer, { backgroundColor: theme.backgroundElement }]}>
             <Pressable
-              onPress={handleLoginSubmit}
-              style={({ pressed }) => [
-                styles.submitButton,
-                { backgroundColor: pressed ? BrandColors.accentDark : BrandColors.accent },
+              onPress={() => setMode('login')}
+              style={[
+                styles.segmentButton,
+                mode === 'login' && { backgroundColor: theme.background, shadowOpacity: 0.1 },
               ]}>
-              <Text style={styles.submitButtonText}>Log In</Text>
-            </Pressable>
-
-            <View style={styles.demoDivider}>
-              <View style={[styles.line, { backgroundColor: theme.backgroundSelected }]} />
-              <Text style={[styles.demoDividerText, { color: theme.textSecondary }]}>
-                Quick Demo Logins
+              <Text style={[styles.segmentText, { color: mode === 'login' ? theme.text : theme.textSecondary }]}>
+                Log In
               </Text>
-              <View style={[styles.line, { backgroundColor: theme.backgroundSelected }]} />
-            </View>
-
-            <View style={styles.demoRow}>
-              <Pressable
-                onPress={() => handleDemoLogin('Adopter')}
-                style={[styles.demoButton, { backgroundColor: theme.background }]}>
-                <Text style={[styles.demoButtonText, { color: BrandColors.accent }]}>
-                  Demo Adopter
-                </Text>
-              </Pressable>
-              <Pressable
-                onPress={() => handleDemoLogin('Shelter')}
-                style={[styles.demoButton, { backgroundColor: theme.background }]}>
-                <Text style={[styles.demoButtonText, { color: '#2563EB' }]}>
-                	Demo Shelter
-                </Text>
-              </Pressable>
-            </View>
+            </Pressable>
+            <Pressable
+              onPress={() => setMode('signup')}
+              style={[
+                styles.segmentButton,
+                mode === 'signup' && { backgroundColor: theme.background, shadowOpacity: 0.1 },
+              ]}>
+              <Text style={[styles.segmentText, { color: mode === 'signup' ? theme.text : theme.textSecondary }]}>
+                Sign Up
+              </Text>
+            </Pressable>
           </View>
-        ) : (
-          /* ── Sign Up Form ── */
-          <View style={[styles.formCard, { backgroundColor: theme.backgroundElement }]}>
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Account Role</Text>
-            <View style={styles.roleRow}>
-              {(['Adopter', 'Shelter'] as UserRole[]).map(r => (
+
+          {/* ── Log In Form ── */}
+          {mode === 'login' ? (
+            <View style={[styles.formCard, { backgroundColor: theme.backgroundElement }]}>
+              <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Email Address</Text>
+              <TextInput
+                value={loginEmail}
+                onChangeText={setLoginEmail}
+                placeholder="Email"
+                placeholderTextColor={theme.textSecondary}
+                style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
+                autoCapitalize="none"
+                keyboardType="email-address"
+              />
+
+              <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Password</Text>
+              <TextInput
+                value={loginPassword}
+                onChangeText={setLoginPassword}
+                placeholder="Password"
+                placeholderTextColor={theme.textSecondary}
+                secureTextEntry
+                style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
+              />
+
+              <Pressable
+                onPress={handleLoginSubmit}
+                style={({ pressed }) => [
+                  styles.submitButton,
+                  { backgroundColor: pressed ? BrandColors.accentDark : BrandColors.accent },
+                ]}>
+                <Text style={styles.submitButtonText}>Log In</Text>
+              </Pressable>
+
+              <View style={styles.demoDivider}>
+                <View style={[styles.line, { backgroundColor: theme.backgroundSelected }]} />
+                <Text style={[styles.demoDividerText, { color: theme.textSecondary }]}>
+                  Quick Demo Logins
+                </Text>
+                <View style={[styles.line, { backgroundColor: theme.backgroundSelected }]} />
+              </View>
+
+              <View style={styles.demoRow}>
                 <Pressable
-                  key={r}
-                  onPress={() => setSignupRole(r)}
-                  style={[
-                    styles.roleChip,
-                    {
-                      backgroundColor:
-                        signupRole === r ? BrandColors.accent : theme.background,
-                    },
-                  ]}>
-                  <Text
-                    style={[
-                      styles.roleChipText,
-                      { color: signupRole === r ? '#ffffff' : theme.text },
-                    ]}>
-                    {r === 'Shelter' ? '🏠 Shelter' : '🐾 Adopter'}
+                  onPress={() => handleDemoLogin('Adopter')}
+                  style={[styles.demoButton, { backgroundColor: theme.background }]}>
+                  <Text style={[styles.demoButtonText, { color: BrandColors.accent }]}>
+                    Demo Adopter
                   </Text>
                 </Pressable>
-              ))}
+                <Pressable
+                  onPress={() => handleDemoLogin('Shelter')}
+                  style={[styles.demoButton, { backgroundColor: theme.background }]}>
+                  <Text style={[styles.demoButtonText, { color: '#2563EB' }]}>
+                    Demo Shelter
+                  </Text>
+                </Pressable>
+              </View>
             </View>
+          ) : (
+            /* ── Sign Up Form ── */
+            <View style={[styles.formCard, { backgroundColor: theme.backgroundElement }]}>
+              <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Account Role</Text>
+              <View style={styles.roleRow}>
+                {(['Adopter', 'Shelter'] as UserRole[]).map(r => (
+                  <Pressable
+                    key={r}
+                    onPress={() => setSignupRole(r)}
+                    style={[
+                      styles.roleChip,
+                      {
+                        backgroundColor:
+                          signupRole === r ? BrandColors.accent : theme.background,
+                      },
+                    ]}>
+                    <Text
+                      style={[
+                        styles.roleChipText,
+                        { color: signupRole === r ? '#ffffff' : theme.text },
+                      ]}>
+                      {r === 'Shelter' ? '🏠 Shelter' : '🐾 Adopter'}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
 
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
-              {signupRole === 'Shelter' ? 'Shelter Name' : 'Full Name'}
-            </Text>
-            <TextInput
-              value={signupName}
-              onChangeText={setSignupName}
-              placeholder={signupRole === 'Shelter' ? 'Shelter Name' : 'Full Name'}
-              placeholderTextColor={theme.textSecondary}
-              style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
-            />
+              <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+                {signupRole === 'Shelter' ? 'Shelter Name' : 'Full Name'}
+              </Text>
+              <TextInput
+                value={signupName}
+                onChangeText={setSignupName}
+                placeholder={signupRole === 'Shelter' ? 'Shelter Name' : 'Full Name'}
+                placeholderTextColor={theme.textSecondary}
+                style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
+              />
 
-            {signupRole === 'Shelter' && (
-              <>
-                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
-                  Shelter Address
-                </Text>
-                <TextInput
-                  value={signupAddress}
-                  onChangeText={setSignupAddress}
-                  placeholder="Address"
-                  placeholderTextColor={theme.textSecondary}
-                  style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
-                />
+              {signupRole === 'Shelter' && (
+                <>
+                  <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+                    Shelter Address
+                  </Text>
+                  <TextInput
+                    value={signupAddress}
+                    onChangeText={setSignupAddress}
+                    placeholder="Address"
+                    placeholderTextColor={theme.textSecondary}
+                    style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
+                  />
 
-                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
-                  External Website URL
-                </Text>
-                <TextInput
-                  value={signupWebsite}
-                  onChangeText={setSignupWebsite}
-                  placeholder="URL"
-                  placeholderTextColor={theme.textSecondary}
-                  style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
-                  autoCapitalize="none"
-                  keyboardType="url"
-                />
-              </>
-            )}
+                  <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+                    External Website URL
+                  </Text>
+                  <TextInput
+                    value={signupWebsite}
+                    onChangeText={setSignupWebsite}
+                    placeholder="URL"
+                    placeholderTextColor={theme.textSecondary}
+                    style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
+                    autoCapitalize="none"
+                    keyboardType="url"
+                  />
+                </>
+              )}
 
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Username</Text>
-            <TextInput
-              value={signupUsername}
-              onChangeText={setSignupUsername}
-              placeholder={signupRole === 'Shelter' ? 'Username' : 'Username'}
-              placeholderTextColor={theme.textSecondary}
-              style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
-              autoCapitalize="none"
-            />
+              <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Username</Text>
+              <TextInput
+                value={signupUsername}
+                onChangeText={setSignupUsername}
+                placeholder={signupRole === 'Shelter' ? 'Username' : 'Username'}
+                placeholderTextColor={theme.textSecondary}
+                style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
+                autoCapitalize="none"
+              />
 
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Email Address</Text>
-            <TextInput
-              value={signupEmail}
-              onChangeText={setSignupEmail}
-              placeholder="Email"
-              placeholderTextColor={theme.textSecondary}
-              style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
-              autoCapitalize="none"
-              keyboardType="email-address"
-            />
+              <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Email Address</Text>
+              <TextInput
+                value={signupEmail}
+                onChangeText={setSignupEmail}
+                placeholder="Email"
+                placeholderTextColor={theme.textSecondary}
+                style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
+                autoCapitalize="none"
+                keyboardType="email-address"
+              />
 
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Password</Text>
-            <TextInput
-              value={signupPassword}
-              onChangeText={setSignupPassword}
-              placeholder="Password"
-              placeholderTextColor={theme.textSecondary}
-              secureTextEntry
-              style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
-            />
+              <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Password</Text>
+              <TextInput
+                value={signupPassword}
+                onChangeText={setSignupPassword}
+                placeholder="Password"
+                placeholderTextColor={theme.textSecondary}
+                secureTextEntry
+                style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
+              />
 
-            <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
-              Instagram Handle (Optional)
-            </Text>
-            <TextInput
-              value={signupInstagram}
-              onChangeText={setSignupInstagram}
-              placeholder="@pawparazzi_friend"
-              placeholderTextColor={theme.textSecondary}
-              style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
-              autoCapitalize="none"
-            />
+              <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+                Instagram Handle (Optional)
+              </Text>
+              <TextInput
+                value={signupInstagram}
+                onChangeText={setSignupInstagram}
+                placeholder="@pawparazzi_friend"
+                placeholderTextColor={theme.textSecondary}
+                style={[styles.input, { backgroundColor: theme.background, color: theme.text }]}
+                autoCapitalize="none"
+              />
 
-            <Pressable
-              onPress={handleSignupSubmit}
-              style={({ pressed }) => [
-                styles.submitButton,
-                { backgroundColor: pressed ? BrandColors.accentDark : BrandColors.accent },
-              ]}>
-              <Text style={styles.submitButtonText}>Create Account ({signupRole})</Text>
-            </Pressable>
-          </View>
-        )}
-      </ScrollView>
+              <Pressable
+                onPress={handleSignupSubmit}
+                style={({ pressed }) => [
+                  styles.submitButton,
+                  { backgroundColor: pressed ? BrandColors.accentDark : BrandColors.accent },
+                ]}>
+                <Text style={styles.submitButtonText}>Create Account ({signupRole})</Text>
+              </Pressable>
+            </View>
+          )}
+        </ScrollView>
+      </View>
     </View>
   );
 }
@@ -349,8 +352,17 @@ const styles = StyleSheet.create({
 		justifyContent: 'center'
   },
   scrollContent: {
-    paddingHorizontal: Spacing.three,
+    // paddingHorizontal: Spacing.three,
     gap: Spacing.three,
+  },
+  innerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flexGrow: 1,
+      width: '100%',
+      maxWidth: MaxContentWidth,
+      justifyContent: 'center',
+      alignSelf: 'center',
   },
   header: {
     alignItems: 'center',

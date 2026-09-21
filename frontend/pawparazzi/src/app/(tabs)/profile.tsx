@@ -19,7 +19,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BrandColors, BottomTabInset, Spacing } from '@/constants/theme';
+import { BrandColors, BottomTabInset, Spacing, MaxContentWidth } from '@/constants/theme';
 import { getDisplayInitials, useAuth } from '@/context/auth-context';
 import { useTheme } from '@/hooks/use-theme';
 
@@ -102,168 +102,170 @@ export default function ProfileScreen() {
 
   return (
     <View style={[styles.root, { backgroundColor: theme.background }]}>
-      <ScrollView
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingTop: paddingTop + Spacing.two, paddingBottom },
-        ]}
-        showsVerticalScrollIndicator={false}>
-        
-        {/* ── Profile Header ── */}
-        <View style={[styles.headerCard, { backgroundColor: theme.backgroundElement }]}>
-          {/* Avatar Photo or Initials */}
-          <View
-            style={[
-              styles.avatarWrapper,
-              {
-                backgroundColor: roleBg,
-                borderColor: roleColor,
-              },
-            ]}>
-            {user.avatarUrl ? (
-              <Image
-                source={user.avatarUrl}
-                style={styles.avatarImage}
-                contentFit="cover"
-              />
-            ) : (
-              <Text style={[styles.avatarInitials, { color: roleColor }]}>
-                {getDisplayInitials(user.name, isShelter)}
-              </Text>
-            )}
-          </View>
-
-          <Text style={[styles.name, { color: theme.text }]}>{user.name}</Text>
-          <Text style={[styles.username, { color: theme.textSecondary }]}>
-            @{user.username}
-          </Text>
-
-          {/* Role Badge Pill */}
-          <View style={styles.roleRow}>
+      <View style={styles.innerContainer}>
+        <ScrollView
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingTop: paddingTop + Spacing.two, paddingBottom },
+          ]}
+          showsVerticalScrollIndicator={false}>
+          
+          {/* ── Profile Header ── */}
+          <View style={[styles.headerCard, { backgroundColor: theme.backgroundElement }]}>
+            {/* Avatar Photo or Initials */}
             <View
               style={[
-                styles.roleBadge,
+                styles.avatarWrapper,
                 {
-                  backgroundColor:
-                    user.role === 'Shelter'
-                      ? 'rgba(59, 130, 246, 0.15)'
-                      : BrandColors.accentMuted,
+                  backgroundColor: roleBg,
+                  borderColor: roleColor,
                 },
               ]}>
-              <Text
+              {user.avatarUrl ? (
+                <Image
+                  source={user.avatarUrl}
+                  style={styles.avatarImage}
+                  contentFit="cover"
+                />
+              ) : (
+                <Text style={[styles.avatarInitials, { color: roleColor }]}>
+                  {getDisplayInitials(user.name, isShelter)}
+                </Text>
+              )}
+            </View>
+
+            <Text style={[styles.name, { color: theme.text }]}>{user.name}</Text>
+            <Text style={[styles.username, { color: theme.textSecondary }]}>
+              @{user.username}
+            </Text>
+
+            {/* Role Badge Pill */}
+            <View style={styles.roleRow}>
+              <View
                 style={[
-                  styles.roleBadgeText,
+                  styles.roleBadge,
                   {
-                    color:
+                    backgroundColor:
                       user.role === 'Shelter'
-                        ? '#2563EB'
-                        : BrandColors.accent,
+                        ? 'rgba(59, 130, 246, 0.15)'
+                        : BrandColors.accentMuted,
                   },
                 ]}>
-                {user.role === 'Shelter' ? 'Shelter' : 'Adopter'}
-              </Text>
+                <Text
+                  style={[
+                    styles.roleBadgeText,
+                    {
+                      color:
+                        user.role === 'Shelter'
+                          ? '#2563EB'
+                          : BrandColors.accent,
+                    },
+                  ]}>
+                  {user.role === 'Shelter' ? 'Shelter' : 'Adopter'}
+                </Text>
+              </View>
             </View>
+
+            {/* Editable Bio / Description */}
+            <Text style={[styles.bioText, { color: theme.textSecondary }]}>
+              {user.bio || 'No description provided yet. Tap Edit Profile to add a bio!'}
+            </Text>
           </View>
 
-          {/* Editable Bio / Description */}
-          <Text style={[styles.bioText, { color: theme.textSecondary }]}>
-            {user.bio || 'No description provided yet. Tap Edit Profile to add a bio!'}
-          </Text>
-        </View>
+          
 
-        {/* ── Instagram Integration Stub ── */}
-        <View style={[styles.sectionCard, { backgroundColor: theme.backgroundElement }]}>
-          <View style={styles.sectionHeaderRow}>
-            <Text style={[styles.sectionTitle, { color: theme.text }]}>Instagram Account</Text>
-          </View>
-          <Text style={[styles.instagramHandleText, { color: user.instagramHandle ? BrandColors.accent : theme.textSecondary }]}>
-            {user.instagramHandle || 'Not connected'}
-          </Text>
-          {user.instagramHandle ? (
-            <Pressable
-              onPress={handleOpenInstagram}
-              style={({ pressed }) => [
-                styles.instagramLinkButton,
-                pressed && { opacity: 0.8 },
-              ]}>
-              <Text style={styles.instagramLinkText}>Visit Instagram Profile</Text>
-            </Pressable>
-          ) : null}
-        </View>
-
-        {/* ── Shelter Website Section (Shelters only) ── */}
-        {user.role === 'Shelter' && (
+          {/* ── Instagram Integration Stub ── */}
           <View style={[styles.sectionCard, { backgroundColor: theme.backgroundElement }]}>
             <View style={styles.sectionHeaderRow}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>External Website</Text>
+              <Text style={[styles.sectionTitle, { color: theme.text }]}>Instagram Account</Text>
             </View>
-            <Text style={[styles.instagramHandleText, { color: BrandColors.accent }]}>
-              {user.websiteUrl || 'No website set'}
+            <Text style={[styles.instagramHandleText, { color: user.instagramHandle ? BrandColors.accent : theme.textSecondary }]}>
+              {user.instagramHandle || 'Not connected'}
             </Text>
-            {user.websiteUrl ? (
+            {user.instagramHandle ? (
               <Pressable
-                onPress={() => {
-                  if (user.websiteUrl) Linking.openURL(user.websiteUrl).catch(() => {});
-                }}
+                onPress={handleOpenInstagram}
                 style={({ pressed }) => [
                   styles.instagramLinkButton,
-                  { backgroundColor: BrandColors.accent },
                   pressed && { opacity: 0.8 },
                 ]}>
-                <Text style={styles.instagramLinkText}>Open Website</Text>
+                <Text style={styles.instagramLinkText}>Visit Instagram Profile</Text>
               </Pressable>
             ) : null}
           </View>
-        )}
 
-        {/* ── User Information Details ── */}
-        <View style={[styles.sectionCard, { backgroundColor: theme.backgroundElement }]}>
-          <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: Spacing.two }]}>
-            Account Details
-          </Text>
-
-          <DetailRow
-            label={user.role === 'Shelter' ? 'Shelter Name' : 'Full Name'}
-            value={user.name}
-            theme={theme}
-          />
-          <DetailRow label="Username" value={`@${user.username}`} theme={theme} />
-          <DetailRow label="Email Address" value={user.email} theme={theme} />
-          <DetailRow label="Role" value={user.role} theme={theme} />
+          {/* ── Shelter Website Section (Shelters only) ── */}
           {user.role === 'Shelter' && (
-            <>
-              <DetailRow label="Address" value={user.address || 'Not specified'} theme={theme} />
-              <DetailRow label="Website" value={user.websiteUrl || 'Not specified'} theme={theme} />
-            </>
+            <View style={[styles.sectionCard, { backgroundColor: theme.backgroundElement }]}>
+              <View style={styles.sectionHeaderRow}>
+                <Text style={[styles.sectionTitle, { color: theme.text }]}>External Website</Text>
+              </View>
+              <Text style={[styles.instagramHandleText, { color: BrandColors.accent }]}>
+                {user.websiteUrl || 'No website set'}
+              </Text>
+              {user.websiteUrl ? (
+                <Pressable
+                  onPress={() => {
+                    if (user.websiteUrl) Linking.openURL(user.websiteUrl).catch(() => {});
+                  }}
+                  style={({ pressed }) => [
+                    styles.instagramLinkButton,
+                    { backgroundColor: BrandColors.accent },
+                    pressed && { opacity: 0.8 },
+                  ]}>
+                  <Text style={styles.instagramLinkText}>Open Website</Text>
+                </Pressable>
+              ) : null}
+            </View>
           )}
-          <DetailRow label="Instagram" value={user.instagramHandle || 'Not connected'} theme={theme} isLast />
-        </View>
 
-        {/* ── Actions ── */}
-        <View style={styles.actionsRow}>
-          <Pressable
-            onPress={handleOpenEdit}
-            style={({ pressed }) => [
-              styles.actionButton,
-              { backgroundColor: BrandColors.accent },
-              pressed && { opacity: 0.85 },
-            ]}>
-            <Text style={styles.actionButtonText}>Edit Profile</Text>
-          </Pressable>
+          {/* ── User Information Details ── */}
+          <View style={[styles.sectionCard, { backgroundColor: theme.backgroundElement }]}>
+            <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: Spacing.two }]}>
+              Account Details
+            </Text>
 
-          <Pressable
-            onPress={handleLogout}
-            style={({ pressed }) => [
-              styles.actionButton,
-              { backgroundColor: theme.backgroundElement },
-              pressed && { opacity: 0.85 },
-            ]}>
-            <Text style={[styles.actionButtonText, { color: '#EF4444' }]}>Log Out</Text>
-          </Pressable>
-        </View>
+            <DetailRow
+              label={user.role === 'Shelter' ? 'Shelter Name' : 'Full Name'}
+              value={user.name}
+              theme={theme}
+            />
+            <DetailRow label="Username" value={`@${user.username}`} theme={theme} />
+            <DetailRow label="Email Address" value={user.email} theme={theme} />
+            <DetailRow label="Role" value={user.role} theme={theme} />
+            {user.role === 'Shelter' && (
+              <>
+                <DetailRow label="Address" value={user.address || 'Not specified'} theme={theme} />
+                <DetailRow label="Website" value={user.websiteUrl || 'Not specified'} theme={theme} />
+              </>
+            )}
+            <DetailRow label="Instagram" value={user.instagramHandle || 'Not connected'} theme={theme} isLast />
+          </View>
 
-      </ScrollView>
+          {/* ── Actions ── */}
+          <View style={styles.actionsRow}>
+            <Pressable
+              onPress={handleOpenEdit}
+              style={({ pressed }) => [
+                styles.actionButton,
+                { backgroundColor: BrandColors.accent },
+                pressed && { opacity: 0.85 },
+              ]}>
+              <Text style={styles.actionButtonText}>Edit Profile</Text>
+            </Pressable>
 
+            <Pressable
+              onPress={handleLogout}
+              style={({ pressed }) => [
+                styles.actionButton,
+                { backgroundColor: theme.backgroundElement },
+                pressed && { opacity: 0.85 },
+              ]}>
+              <Text style={[styles.actionButtonText, { color: '#EF4444' }]}>Log Out</Text>
+            </Pressable>
+          </View>
+        </ScrollView>
+      </View>
       {/* ── Edit Profile Modal ── */}
       <Modal
         visible={isEditModalOpen}
@@ -481,8 +483,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: Spacing.three,
+    // paddingHorizontal: Spacing.three,
     gap: Spacing.three,
+  },
+  innerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexGrow: 1,
+    width: '100%',
+    maxWidth: MaxContentWidth,
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
   headerCard: {
     borderRadius: 20,
