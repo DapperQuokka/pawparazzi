@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { FlatList, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useWindowDimensions, FlatList, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AnimalCard } from '@/components/animal-card';
@@ -36,11 +36,14 @@ export default function UrgentScreen() {
     router.push(`/animal/${animal.id}` as any);
   };
 
-  const NATIVE_TOP_TAB_HEIGHT = 60; 
+  const NATIVE_TOP_TAB_HEIGHT = 48; 
   const paddingTop = Platform.OS === 'ios' 
   ? insets.top + NATIVE_TOP_TAB_HEIGHT 
   : insets.top + NATIVE_TOP_TAB_HEIGHT + Spacing.two;
   const paddingBottom = insets.bottom + BottomTabInset + Spacing.three;
+
+  const { width: windowWidth } = useWindowDimensions();
+  const numColumns = windowWidth >= 1024 ? 3 : windowWidth >= 768 ? 2 : 1;
 
   return (
     <View style={[styles.root, { backgroundColor: theme.background }]}>
@@ -98,7 +101,9 @@ export default function UrgentScreen() {
         <FlatList
           data={filteredAnimals}
           keyExtractor={item => item.id}
-          numColumns={1}
+          // numColumns={1}
+          numColumns={numColumns}
+          key={numColumns}
           contentContainerStyle={[styles.listContent, { paddingBottom }]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
@@ -163,6 +168,7 @@ const styles = StyleSheet.create({
   listContent: {
     paddingTop: Spacing.three,
     paddingHorizontal: Spacing.three,
+    padding: 10,
   },
   columnWrapper: {
     gap: Spacing.two,
@@ -170,8 +176,10 @@ const styles = StyleSheet.create({
   },
   cardWrapper: {
     flex: 1,
-		minWidth: '100%',
-		marginBottom: 20
+    width: '100%',
+    margin: 10,
+    marginBottom: 20,
+    alignSelf: 'center'
   },
   emptyState: {
     flex: 1,
