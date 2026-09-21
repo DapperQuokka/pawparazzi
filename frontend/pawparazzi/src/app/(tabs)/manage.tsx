@@ -27,7 +27,10 @@ export default function ManageScreen() {
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  const paddingTop = Platform.OS === 'ios' ? insets.top : insets.top + Spacing.two;
+  const NATIVE_TOP_TAB_HEIGHT = 60; 
+  const paddingTop = Platform.OS === 'ios' 
+  ? insets.top + NATIVE_TOP_TAB_HEIGHT 
+  : insets.top + NATIVE_TOP_TAB_HEIGHT + Spacing.two;
   const paddingBottom = insets.bottom + BottomTabInset + Spacing.four;
 
   if (!isLoggedIn || !user) {
